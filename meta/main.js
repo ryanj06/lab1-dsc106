@@ -1,4 +1,5 @@
 import * as d3 from 'https://cdn.jsdelivr.net/npm/d3@7/+esm';
+import scrollama from 'https://cdn.jsdelivr.net/npm/[email protected]/+esm';
 
 async function loadData() {
     const data = await d3.csv('loc.csv', (row) => ({
@@ -259,7 +260,6 @@ function renderLanguageBreakdown(selection, commits, isCommitSelected) {
 function setupScrollytelling(commits) {
     const commitsSorted = d3.sort(commits, (d) => d.datetime);
 
-    // Scatter plot story steps
     d3.select('#scatter-story')
         .selectAll('.step')
         .data(commitsSorted)
@@ -275,34 +275,18 @@ function setupScrollytelling(commits) {
             </p>`;
         });
 
-    // Files story steps
-    d3.select('#files-story')
-        .selectAll('.step')
-        .data(commitsSorted)
-        .join('div')
-        .attr('class', 'step')
-        .html((d) => {
-            const fileCount = d3.group(d.lines, (l) => l.file).size;
-            return `<p>
-                On ${d.datetime.toLocaleString('en', { dateStyle: 'long', timeStyle: 'short' })},
-                I made <a href="${d.url}" target="_blank">a commit</a>
-                that changed ${d.totalLines} line${d.totalLines !== 1 ? 's' : ''}
-                across ${fileCount} file${fileCount !== 1 ? 's' : ''}.
-            </p>`;
-        });
-
-    // Use IntersectionObserver (same semantics as scrollama, no CDN dependency)
-    const observer = new IntersectionObserver((entries) => {
-        for (const entry of entries) {
-            if (!entry.isIntersecting) continue;
-            const commit = entry.target.__data__;
+    const scroller = scrollama();
+    scroller
+        .setup({
+            container: '#scrolly-1',
+            step: '#scrolly-1 .step',
+        })
+        .onStepEnter((response) => {
+            const commit = response.element.__data__;
             filteredCommits = commits.filter((d) => d.datetime <= commit.datetime);
             updateScatterPlot(filteredCommits);
             updateFileDisplay(filteredCommits);
-        }
-    }, { rootMargin: '0px 0px -50% 0px', threshold: 0 });
-
-    document.querySelectorAll('.step').forEach((el) => observer.observe(el));
+        });
 }
 
 const data = await loadData();

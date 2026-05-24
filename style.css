@@ -334,37 +334,29 @@ circle.selected {
 }
 
 /* Scrollytelling layout */
-#scrolly-1,
-#scrolly-2 {
+#scrolly-1 {
+  position: relative;
   display: flex;
-  gap: 2em;
-  align-items: flex-start;
+  gap: 1rem;
 }
 
-#scatter-plot,
-#files-plot {
+#scrolly-1 > * {
+  flex: 1;
+}
+
+#scatter-story {
+  position: relative;
+}
+
+#scatter-plot {
   position: sticky;
-  top: 1em;
-  flex: 1;
+  top: 0;
+  left: 0;
   height: 50vh;
-  overflow-y: auto;
-}
-
-#scatter-story,
-#files-story {
-  flex: 1;
 }
 
 .step {
-  padding: 6em 1em;
-}
-
-.step p {
-  background: canvas;
-  border-left: 3px solid var(--color-accent);
-  padding: 0.75em 1em;
-  border-radius: 0 0.4em 0.4em 0;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  padding: 4em 1em;
 }
 
 /* Unit visualization (file race) */
@@ -372,6 +364,7 @@ circle.selected {
   display: grid;
   grid-template-columns: auto 1fr;
   gap: 0.5em 1em;
+  margin-top: 1em;
 }
 
 #files dl > div {
@@ -381,20 +374,21 @@ circle.selected {
   align-items: start;
 }
 
-#files dl dt {
-  padding-top: 0.3em;
-}
-
 #files dl dd {
+  grid-column: 2;
   display: flex;
   flex-wrap: wrap;
+  align-items: start;
+  align-content: start;
   gap: 0.15em;
-  margin: 0;
-  padding-top: 0.15em;
+  padding-top: 0.6em;
+  margin-left: 0;
 }
 
 .loc {
+  display: flex;
   width: 0.5em;
   aspect-ratio: 1;
   background-color: var(--color);
+  border-radius: 50%;
 }

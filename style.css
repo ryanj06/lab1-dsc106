@@ -306,6 +306,9 @@ circle {
   transition: 200ms;
   transform-origin: center;
   transform-box: fill-box;
+  @starting-style {
+    r: 0;
+  }
 }
 
 circle:hover {
@@ -328,4 +331,70 @@ circle.selected {
   stroke-opacity: 0.7;
   stroke-dasharray: 5 3;
   animation: marching-ants 2s linear infinite;
+}
+
+/* Scrollytelling layout */
+#scrolly-1,
+#scrolly-2 {
+  display: flex;
+  gap: 2em;
+  align-items: flex-start;
+}
+
+#scatter-plot,
+#files-plot {
+  position: sticky;
+  top: 1em;
+  flex: 1;
+  height: 50vh;
+  overflow-y: auto;
+}
+
+#scatter-story,
+#files-story {
+  flex: 1;
+}
+
+.step {
+  padding: 6em 1em;
+}
+
+.step p {
+  background: canvas;
+  border-left: 3px solid var(--color-accent);
+  padding: 0.75em 1em;
+  border-radius: 0 0.4em 0.4em 0;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Unit visualization (file race) */
+#files dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.5em 1em;
+}
+
+#files dl > div {
+  display: grid;
+  grid-template-columns: subgrid;
+  grid-column: 1 / -1;
+  align-items: start;
+}
+
+#files dl dt {
+  padding-top: 0.3em;
+}
+
+#files dl dd {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.15em;
+  margin: 0;
+  padding-top: 0.15em;
+}
+
+.loc {
+  width: 0.5em;
+  aspect-ratio: 1;
+  background-color: var(--color);
 }

@@ -1,5 +1,5 @@
 import * as d3 from 'https://cdn.jsdelivr.net/npm/d3@7/+esm';
-import scrollama from 'https://cdn.jsdelivr.net/npm/[email protected]/+esm';
+import scrollama from 'https://esm.sh/scrollama@3';
 
 async function loadData() {
     const data = await d3.csv('loc.csv', (row) => ({

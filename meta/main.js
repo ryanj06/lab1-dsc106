@@ -1,5 +1,4 @@
 import * as d3 from 'https://cdn.jsdelivr.net/npm/d3@7/+esm';
-import scrollama from 'https://cdn.jsdelivr.net/npm/[email protected]/+esm';
 
 async function loadData() {
     const data = await d3.csv('loc.csv', (row) => ({
@@ -276,18 +275,7 @@ function setupScrollytelling(commits) {
             </p>`;
         });
 
-    const scroller1 = scrollama();
-    scroller1.setup({
-        container: '#scrolly-1',
-        step: '#scatter-story .step',
-    }).onStepEnter((response) => {
-        const commit = response.element.__data__;
-        filteredCommits = commits.filter((d) => d.datetime <= commit.datetime);
-        updateScatterPlot(filteredCommits);
-        updateFileDisplay(filteredCommits);
-    });
-
-    // Files story steps (duplicate commit descriptions for second scrolly section)
+    // Files story steps
     d3.select('#files-story')
         .selectAll('.step')
         .data(commitsSorted)
@@ -303,16 +291,18 @@ function setupScrollytelling(commits) {
             </p>`;
         });
 
-    const scroller2 = scrollama();
-    scroller2.setup({
-        container: '#scrolly-2',
-        step: '#files-story .step',
-    }).onStepEnter((response) => {
-        const commit = response.element.__data__;
-        filteredCommits = commits.filter((d) => d.datetime <= commit.datetime);
-        updateScatterPlot(filteredCommits);
-        updateFileDisplay(filteredCommits);
-    });
+    // Use IntersectionObserver (same semantics as scrollama, no CDN dependency)
+    const observer = new IntersectionObserver((entries) => {
+        for (const entry of entries) {
+            if (!entry.isIntersecting) continue;
+            const commit = entry.target.__data__;
+            filteredCommits = commits.filter((d) => d.datetime <= commit.datetime);
+            updateScatterPlot(filteredCommits);
+            updateFileDisplay(filteredCommits);
+        }
+    }, { rootMargin: '0px 0px -50% 0px', threshold: 0 });
+
+    document.querySelectorAll('.step').forEach((el) => observer.observe(el));
 }
 
 const data = await loadData();

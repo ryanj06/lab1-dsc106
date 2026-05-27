@@ -76,33 +76,36 @@
 
         <h3>What we&rsquo;ve done so far</h3>
         <p>
-          We started from the <em>NBA Games Dataset</em> by Nathan Lauga on
-          Kaggle, focusing on <code>games_details.csv</code>, which holds over
-          600,000 player-game rows of offensive statistics. Because that file is
-          far too large to ship to the browser, we aggregated it down to
-          season-level league averages &mdash; three-point attempts per game,
-          three-point share of all field-goal attempts, and points per shot
-          &mdash; plus a per-champion summary of three-point volume. We then
-          rebuilt our static matplotlib explorations as interactive D3.js
-          charts: a metric-switching line chart with a season scrubber, and a
-          champions bar chart with hover tooltips. This prototype establishes
-          the data pipeline, the page structure, and the core interaction
-          patterns we will reuse across the final explorable explanation.
+          The prototype originated with the NBA Games Dataset provided by Nathan
+          Lauga on Kaggle; specifically, the <code>games_details.csv</code>
+          dataset, containing over 600,000 rows of offensive statistics for
+          players per game. Given that this CSV is too large to transmit to the
+          browser, we reduced the data set to league-level metrics per season,
+          namely, average three-point attempts per game, average percentage of
+          shots attempted from beyond the arc among all field goal attempts, and
+          average points scored per shot. In addition, we added a summary metric
+          for each champion, regarding the amount of three-point shooting.
+          Finally, we recreated the static matplotlib graphs as dynamic D3.js
+          graphs, with an option to switch between metrics on the first and a
+          champions bar chart on the second graph, including tooltip
+          functionality.
         </p>
 
         <h3>The most challenging design aspect</h3>
         <p>
-          The hardest design decision has been telling a clear story without
-          burying the user in 600,000 rows or a wall of text. We had to choose
-          which aggregations actually carry the &ldquo;death of the
-          midrange&rdquo; narrative and which interactions make that change
-          feel tangible rather than decorative. Scrubbing through seasons,
-          for example, only works if the axes stay fixed so the eye tracks the
-          real trend instead of a rescaling artifact. We also wrestled with how
-          much to pre-compute server-side versus in the browser, since
-          responsiveness depends on small, tidy data. Going forward, our biggest
-          challenge will be layering player- and team-level comparisons on top
-          of these league trends without overwhelming the casual basketball fan.
+          The most difficult design choice, however, was communicating a
+          coherent narrative without drowning the user in 600,000 data points or
+          an endless amount of text. Decisions had to be made regarding what
+          kind of aggregations were truly illustrative of the &ldquo;death of
+          the midrange&rdquo; story, and what interactions conveyed its
+          significance rather than merely being superficial. Browsing by
+          seasons, for instance, only really makes sense if the axes are locked
+          down and allow one to perceive the real trend, not an illusion due to
+          axis rescaling. We also grappled with how far pre-computation should
+          be taken server-side versus client-side, as responsiveness required
+          manageable and clean data. The next major challenge facing us is
+          combining individual and team-level analysis with this league-wide
+          trend.
         </p>
       </section>
 

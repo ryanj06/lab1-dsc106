@@ -44,6 +44,7 @@ const pages = [
     { url: 'contact/index.html', title: 'Contact' },
     { url: 'resume.html', title: 'Resume' },
     { url: 'meta/index.html', title: 'Meta' },
+    { url: 'final/index.html', title: 'Final Project' },
     { url: 'https://github.com/tijilchhabra1729', title: 'GitHub' },
 ];
 

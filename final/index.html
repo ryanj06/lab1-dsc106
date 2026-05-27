@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The Death of the Midrange: How Analytics Changed the NBA</title>
+    <link rel="stylesheet" href="/lab1-dsc106/style.css" />
+    <link rel="stylesheet" href="final.css" />
+    <script type="module" src="/lab1-dsc106/global.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+    <script type="module" src="main.js"></script>
+  </head>
+  <body>
+    <article class="final">
+      <header class="hero">
+        <p class="kicker">DSC 106 · Final Project · Initial Prototype</p>
+        <h1>The Death of the Midrange</h1>
+        <p class="subtitle">How analytics changed the way the NBA scores.</p>
+        <p class="byline">By Tijil Chhabra &amp; team · Data: NBA Games Dataset (Nathan Lauga, Kaggle)</p>
+      </header>
+
+      <section class="intro">
+        <p>
+          Twenty years ago, an NBA offense lived in the midrange: long two-point
+          jumpers, post-ups, and pull-ups from the elbow. Then the analytics
+          movement asked a simple question &mdash; <em>which shots are actually
+          worth the most points?</em> The answer reshaped the league. This
+          explorable explanation lets you move through the seasons and watch the
+          three-point shot take over modern basketball.
+        </p>
+      </section>
+
+      <!-- ===== INTERACTIVE VIZ 1: season scrubber + metric toggle ===== -->
+      <section class="viz-block">
+        <h2>The league moved beyond the arc</h2>
+        <p class="caption">
+          Drag the slider to scrub through seasons, or switch the metric to see
+          how shot volume and efficiency rose together. Hover any point for the
+          exact value.
+        </p>
+
+        <div class="controls">
+          <div class="metric-toggle" role="group" aria-label="Choose metric">
+            <button data-metric="threePAR" class="active">3PA share of shots</button>
+            <button data-metric="threePApg">3PA per game</button>
+            <button data-metric="ptsPerFGA">Points per shot</button>
+          </div>
+          <label class="slider-label">
+            Season: <strong id="season-readout">2003</strong>
+            <input id="season-slider" type="range" min="2003" max="2021" value="2003" step="1" />
+          </label>
+        </div>
+
+        <div id="line-chart"></div>
+        <p id="line-annotation" class="annotation"></p>
+      </section>
+
+      <!-- ===== INTERACTIVE VIZ 2: champions bar chart with hover ===== -->
+      <section class="viz-block">
+        <h2>Champions led the revolution</h2>
+        <p class="caption">
+          Recent NBA champions, ranked by how many threes they launched per
+          game. Hover a bar for detail &mdash; notice the jump after the 2015
+          Warriors.
+        </p>
+        <div id="champ-chart"></div>
+      </section>
+
+      <!-- ===== WRITEUP (required) ===== -->
+      <section class="writeup">
+        <h2>Prototype Writeup</h2>
+
+        <h3>What we&rsquo;ve done so far</h3>
+        <p>
+          We started from the <em>NBA Games Dataset</em> by Nathan Lauga on
+          Kaggle, focusing on <code>games_details.csv</code>, which holds over
+          600,000 player-game rows of offensive statistics. Because that file is
+          far too large to ship to the browser, we aggregated it down to
+          season-level league averages &mdash; three-point attempts per game,
+          three-point share of all field-goal attempts, and points per shot
+          &mdash; plus a per-champion summary of three-point volume. We then
+          rebuilt our static matplotlib explorations as interactive D3.js
+          charts: a metric-switching line chart with a season scrubber, and a
+          champions bar chart with hover tooltips. This prototype establishes
+          the data pipeline, the page structure, and the core interaction
+          patterns we will reuse across the final explorable explanation.
+        </p>
+
+        <h3>The most challenging design aspect</h3>
+        <p>
+          The hardest design decision has been telling a clear story without
+          burying the user in 600,000 rows or a wall of text. We had to choose
+          which aggregations actually carry the &ldquo;death of the
+          midrange&rdquo; narrative and which interactions make that change
+          feel tangible rather than decorative. Scrubbing through seasons,
+          for example, only works if the axes stay fixed so the eye tracks the
+          real trend instead of a rescaling artifact. We also wrestled with how
+          much to pre-compute server-side versus in the browser, since
+          responsiveness depends on small, tidy data. Going forward, our biggest
+          challenge will be layering player- and team-level comparisons on top
+          of these league trends without overwhelming the casual basketball fan.
+        </p>
+      </section>
+
+      <footer class="final-footer">
+        <p>
+          Repository:
+          <a href="https://github.com/tijilchhabra1729/lab1-dsc106">github.com/tijilchhabra1729/lab1-dsc106</a>
+        </p>
+      </footer>
+    </article>
+  </body>
+</html>

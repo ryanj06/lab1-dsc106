@@ -1,0 +1,187 @@
+/* The Death of the Midrange — final project styles */
+
+.final {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 1rem;
+  line-height: 1.6;
+}
+
+.hero {
+  text-align: center;
+  padding: 2.5rem 1rem 1.5rem;
+  border-bottom: 1px solid color-mix(in srgb, currentColor 15%, transparent);
+  margin-bottom: 1.5rem;
+}
+.hero .kicker {
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.75rem;
+  opacity: 0.65;
+  margin: 0;
+}
+.hero h1 {
+  font-size: clamp(2rem, 6vw, 3.4rem);
+  margin: 0.3em 0 0.1em;
+  line-height: 1.05;
+}
+.hero .subtitle {
+  font-size: 1.25rem;
+  opacity: 0.85;
+  margin: 0.2em 0;
+}
+.hero .byline {
+  font-size: 0.85rem;
+  opacity: 0.6;
+}
+
+.intro p {
+  font-size: 1.1rem;
+}
+
+.viz-block {
+  margin: 2.5rem 0;
+}
+.viz-block h2 {
+  margin-bottom: 0.25em;
+}
+.caption {
+  opacity: 0.75;
+  margin-top: 0;
+}
+.annotation {
+  margin-top: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: color-mix(in srgb, #e8702a 12%, transparent);
+  border-left: 3px solid #e8702a;
+  border-radius: 4px;
+  font-size: 0.95rem;
+}
+
+/* controls */
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 1.5rem;
+  align-items: center;
+  margin: 1rem 0;
+}
+.metric-toggle {
+  display: inline-flex;
+  border: 1px solid color-mix(in srgb, currentColor 25%, transparent);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.metric-toggle button {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  padding: 0.5rem 0.9rem;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.85rem;
+  border-right: 1px solid color-mix(in srgb, currentColor 18%, transparent);
+}
+.metric-toggle button:last-child {
+  border-right: 0;
+}
+.metric-toggle button.active {
+  background: #e8702a;
+  color: #fff;
+}
+.slider-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+}
+.slider-label input[type="range"] {
+  accent-color: #e8702a;
+  width: 220px;
+}
+
+/* svg */
+.responsive-svg {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.axis text {
+  font-size: 11px;
+  fill: currentColor;
+  opacity: 0.8;
+}
+.axis path,
+.axis line {
+  stroke: currentColor;
+  opacity: 0.18;
+}
+.axis-title {
+  font-size: 12px;
+  fill: currentColor;
+  opacity: 0.9;
+}
+
+.trend-line {
+  fill: none;
+  stroke: #e8702a;
+  stroke-width: 2.5;
+}
+.trend-area {
+  fill: color-mix(in srgb, #e8702a 16%, transparent);
+}
+.trend-dot {
+  fill: #e8702a;
+  cursor: pointer;
+}
+.season-marker {
+  stroke: #1d6fb8;
+  stroke-width: 1.5;
+  stroke-dasharray: 4 4;
+}
+.season-dot {
+  fill: #1d6fb8;
+  stroke: #fff;
+  stroke-width: 1.5;
+}
+
+.champ-bar {
+  fill: #1d6fb8;
+  transition: fill 0.15s;
+}
+.champ-bar.hover {
+  fill: #e8702a;
+}
+.bar-label {
+  font-size: 10px;
+  fill: currentColor;
+  opacity: 0.75;
+}
+
+/* tooltip */
+.viz-tooltip {
+  position: absolute;
+  pointer-events: none;
+  background: #1b1b1b;
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  line-height: 1.35;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+  z-index: 50;
+}
+
+.writeup {
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid color-mix(in srgb, currentColor 15%, transparent);
+}
+.writeup h3 {
+  margin-bottom: 0.2em;
+}
+.final-footer {
+  margin-top: 2.5rem;
+  font-size: 0.85rem;
+  opacity: 0.7;
+}

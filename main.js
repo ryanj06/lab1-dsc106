@@ -285,7 +285,30 @@ function buildLineChart() {
   // season slider
   const slider = document.getElementById("season-slider");
   if (slider) {
-    slider.addEventListener("input", () => updateSeasonMarker(+slider.value));
+    slider.addEventListener("input", () => {
+      const season = +slider.value;
+      updateSeasonMarker(season);
+      // update scrolly era based on slider position
+      const era = season <= 2010 ? 0 : season <= 2014 ? 1 : season <= 2017 ? 2 : 3;
+      const cfg = ERA_CONFIG[era];
+      if (cfg) {
+        document.getElementById("era-badge").textContent = cfg.badge;
+        document.getElementById("era-title").textContent = cfg.title;
+        document.getElementById("era-desc").textContent  = cfg.desc;
+        highlightRange = cfg.seasonRange;
+        showProjection = false;
+        if (cfg.metric !== lineMetric) {
+          lineMetric = cfg.metric;
+          document.querySelectorAll(".metric-toggle button").forEach(btn => {
+            btn.classList.toggle("active", btn.dataset.metric === lineMetric);
+          });
+          draw();
+        }
+        document.querySelectorAll(".scroll-panel").forEach(p => {
+          p.classList.toggle("active", +p.dataset.era === era);
+        });
+      }
+    });
     updateSeasonMarker(2003);
   }
 }
@@ -323,6 +346,14 @@ function initScrolly() {
         document.querySelectorAll(".metric-toggle button").forEach(btn => {
           btn.classList.toggle("active", btn.dataset.metric === lineMetric);
         });
+      }
+
+      // snap slider to era start season
+      const slider = document.getElementById("season-slider");
+      if (slider && cfg.seasonRange) {
+        const snapSeason = Math.min(cfg.seasonRange[0], 2021);
+        slider.value = snapSeason;
+        if (window._updateSeasonMarker) window._updateSeasonMarker(snapSeason);
       }
 
       if (window._redrawLine) window._redrawLine();
@@ -467,14 +498,6 @@ async function buildScatter() {
     .on("mousemove",(ev,d)=>showTip(`<strong>${d.season}</strong><br>3PA Rate: ${(d.fg3pct*100).toFixed(1)}%<br>Win %: ${(d.winpct*100).toFixed(1)}%`,ev))
     .on("mouseleave",hideTip);
 
-  // color legend
-  const lg = svg.append("g").attr("transform",`translate(${sm.left + iw - 120},${sm.top+5})`);
-  const lgGrad = svg.select("defs").append("linearGradient").attr("id","scatGrad").attr("x1","0%").attr("x2","100%");
-  lgGrad.append("stop").attr("offset","0%").attr("stop-color","#1d6fb8");
-  lgGrad.append("stop").attr("offset","100%").attr("stop-color","#e8702a");
-  lg.append("rect").attr("width",100).attr("height",6).attr("rx",3).attr("fill","url(#scatGrad)");
-  lg.append("text").attr("class","callout-text").attr("y",18).text("2003");
-  lg.append("text").attr("class","callout-text").attr("x",100).attr("y",18).attr("text-anchor","end").text("2021");
 }
 
 // =====================================================================
@@ -517,8 +540,8 @@ function buildChampions() {
       .attr("y1",cy(gsw2015.threePApg)).attr("y2",cy(gsw2015.threePApg))
       .attr("stroke","rgba(232,112,42,0.3)").attr("stroke-dasharray","4 4").attr("stroke-width",1.5);
     g.append("text").attr("class","callout-text")
-      .attr("x",iw-4).attr("y",cy(gsw2015.threePApg)-5)
-      .attr("text-anchor","end").text("2015 Warriors baseline");
+      .attr("x",4).attr("y",cy(gsw2015.threePApg)-5)
+      .attr("text-anchor","start").text("2015 Warriors benchmark");
   }
 
   g.selectAll("rect").data(CHAMPIONS).join("rect")

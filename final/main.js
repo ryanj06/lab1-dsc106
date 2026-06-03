@@ -241,13 +241,7 @@ function buildLineChart() {
       projLabel.text("");
     }
 
-    // annotation text
-    const lastSeason = SEASONS[SEASONS.length-1];
-    const firstSeason = SEASONS[0];
-    document.getElementById("line-annotation").innerHTML =
-      `In <strong>2003</strong>, teams averaged <strong>${METRICS.threePApg.fmt(firstSeason.threePApg)}</strong> threes/game.
-       By <strong>2021</strong>, that number was <strong>${METRICS.threePApg.fmt(lastSeason.threePApg)}</strong> —
-       a <strong>${((lastSeason.threePApg/firstSeason.threePApg-1)*100).toFixed(0)}%</strong> increase.`;
+    // annotation updated by slider only
   }
 
   // season marker elements
@@ -348,7 +342,7 @@ function initScrolly() {
         });
       }
 
-      // snap slider to era start season
+      // snap slider to era start season and update annotation
       const slider = document.getElementById("season-slider");
       if (slider && cfg.seasonRange) {
         const snapSeason = Math.min(cfg.seasonRange[0], 2021);
@@ -357,6 +351,11 @@ function initScrolly() {
       }
 
       if (window._redrawLine) window._redrawLine();
+
+      // force annotation update after redraw
+      if (slider && window._updateSeasonMarker) {
+        window._updateSeasonMarker(+slider.value);
+      }
     });
   }, { threshold: 0.4 });
 

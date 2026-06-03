@@ -16,7 +16,7 @@
       <div class="hero-inner">
         <p class="kicker">DSC 106 · Final Project · UCSD</p>
         <h1 class="hero-title">The Death of<br>the Midrange</h1>
-        <p class="hero-sub">How analytics rewired the NBA's brain and killed the game's most elegant shot.</p>
+        <p class="hero-sub">How the NBA stopped playing one way and started playing a completely different one.</p>
         <p class="byline">Tijil Chhabra · Ryan Jose · Leo Wiemelt &nbsp;·&nbsp; Data: NBA Games Dataset (Kaggle)</p>
         <div class="scroll-hint">
           <span>scroll to explore</span>
@@ -28,8 +28,8 @@
     <!-- INTRO -->
     <section class="prose-section">
       <div class="prose-inner">
-        <p class="lead">Twenty years ago, an NBA offense lived in the midrange. Long two-point jumpers, post-ups, pull-ups from the elbow. That was just how basketball was played. Then the analytics movement asked a simple question: <em>which shots are actually worth the most points?</em></p>
-        <p>The answer changed everything. Scroll through the eras below and watch the three-point shot slowly, then all at once, take over the entire sport.</p>
+        <p class="lead">For most of NBA history, the midrange jumper was just part of the game. Guys like Kobe, Dirk, and Tim Duncan lived there. Nobody questioned it. Then front offices started running the numbers and realized those shots were basically the worst ones you could take.</p>
+        <p>Scroll through the data below and see how fast things changed once teams figured that out.</p>
       </div>
     </section>
 
@@ -39,16 +39,20 @@
         <div class="sticky-header">
           <div class="era-badge" id="era-badge">Era 1</div>
           <h2 class="era-title" id="era-title">The Midrange Reigned</h2>
-          <p class="era-desc" id="era-desc">Teams shot ~15 threes per game. Kobe, Duncan, Dirk ruled the elbow.</p>
+          <p class="era-desc" id="era-desc">Teams shot around 15 threes per game. Kobe, Duncan, Dirk ruled the elbow.</p>
         </div>
 
-        <!-- METRIC TOGGLE -->
+        <!-- METRIC TOGGLE + SEASON SLIDER -->
         <div class="controls">
           <div class="metric-toggle" role="group">
             <button data-metric="threePAR" class="active">3PA share of shots</button>
             <button data-metric="threePApg">3PA per game</button>
             <button data-metric="ptsPerFGA">Points per shot</button>
           </div>
+          <label class="slider-label">
+            Season: <strong id="season-readout">2003</strong>
+            <input id="season-slider" type="range" min="2003" max="2021" value="2003" step="1" />
+          </label>
         </div>
 
         <div id="line-chart"></div>
@@ -62,15 +66,15 @@
           <div class="panel-content">
             <span class="panel-year">2003 – 2010</span>
             <h3>The Midrange Reigned</h3>
-            <p>The NBA ran on post-ups, pull-ups, and long twos. Three-pointers were a bonus, not a strategy. The midrange jumper was art.</p>
+            <p>Teams ran their offense through the post or the elbow. Three-pointers existed but nobody was building a game plan around them.</p>
             <div class="panel-stat"><span class="stat-num">14.9</span><span class="stat-label">threes per game in 2003</span></div>
           </div>
         </div>
         <div class="scroll-panel" data-era="1">
           <div class="panel-content">
             <span class="panel-year">2011 – 2014</span>
-            <h3>Analytics Enter the Chat</h3>
-            <p>Moneyball thinking spread to basketball. Front offices started tracking expected points per shot. The midrange was exposed as the worst shot on the floor, lowest return, highest cost.</p>
+            <h3>The Numbers Don't Lie</h3>
+            <p>Analytics started showing up in every front office. Teams realized the midrange was giving up value on every single shot. The math was pretty clear.</p>
             <div class="panel-stat"><span class="stat-num">+43%</span><span class="stat-label">rise in 3PA from 2003</span></div>
           </div>
         </div>
@@ -78,23 +82,23 @@
           <div class="panel-content">
             <span class="panel-year">2015 – 2017</span>
             <h3>Curry Changes Everything</h3>
-            <p>Steph Curry broke the game. The 2015 Warriors won a championship firing 31 threes a game, a number that would have seemed absurd a decade earlier. Every front office scrambled to copy them.</p>
-            <div class="panel-stat"><span class="stat-num">31.3</span><span class="stat-label">threes/game — 2015 champions</span></div>
+            <p>The Warriors won a title shooting 31 threes a game and suddenly every team wanted to play that way. It went from a strategy to basically the only strategy.</p>
+            <div class="panel-stat"><span class="stat-num">31.3</span><span class="stat-label">threes/game, 2015 champs</span></div>
           </div>
         </div>
         <div class="scroll-panel" data-era="3">
           <div class="panel-content">
             <span class="panel-year">2018 – 2021</span>
             <h3>The New Normal</h3>
-            <p>The three-pointer became the default. Teams that resisted fell behind. The midrange was not just unfashionable anymore. It was basically gone.</p>
+            <p>By 2021, four out of every ten shots in the NBA were threes. The midrange did not slowly fade out. It just kind of stopped existing.</p>
             <div class="panel-stat"><span class="stat-num">40.1%</span><span class="stat-label">of all shots were threes in 2021</span></div>
           </div>
         </div>
         <div class="scroll-panel" data-era="4">
           <div class="panel-content">
             <span class="panel-year">2022 – 2030</span>
-            <h3>Where Does It End?</h3>
-            <p>If the trend holds, teams could average over 45 threes a game by 2030. The dashed line shows the projection and the shaded band shows the range of uncertainty.</p>
+            <h3>Where Does It Stop?</h3>
+            <p>If the trend keeps going, teams could be shooting close to 45 threes a game by 2030. The dashed line is the projection. The shaded area is the uncertainty around it.</p>
             <div class="panel-stat"><span class="stat-num">~45</span><span class="stat-label">projected threes/game by 2030</span></div>
           </div>
         </div>
@@ -105,34 +109,34 @@
     <section class="prose-section">
       <div class="prose-inner">
         <h2 class="section-heading">Then vs. Now</h2>
-        <p>Two decades. One transformation. Here's how the numbers compare.</p>
+        <p>2003 to 2021. Same sport, completely different game.</p>
       </div>
       <div class="then-now-grid" id="then-now"></div>
     </section>
 
     <!-- WIN CORRELATION -->
-    <section class="prose-section dark-section">
+    <section class="prose-section">
       <div class="prose-inner">
-        <h2 class="section-heading">Does shooting more threes actually win games?</h2>
-        <p>Each dot below is one team, one season. There is a clear pattern but it is not as simple as shoot more threes and win more games. The best teams found the right balance.</p>
+        <h2 class="section-heading">Do more threes mean more wins?</h2>
+        <p>Each dot is one team, one season. There is a relationship but it is not that clean. Plenty of teams shot a lot of threes and still lost a lot of games.</p>
       </div>
       <div id="scatter-chart"></div>
     </section>
 
-    <!-- CHAMPIONS -->
-    <section class="prose-section">
+    <!-- CHAMPIONS BAR -->
+    <section class="prose-section dark-section">
       <div class="prose-inner">
-        <h2 class="section-heading">Champions led the revolution</h2>
-        <p>Every NBA champion since 2012, ranked by how many threes they shot per game. Look at the jump after the 2015 Warriors. The blueprint changed basically overnight.</p>
+        <h2 class="section-heading">Champions led the shift</h2>
+        <p>Every title team since 2012 ranked by threes per game. The jump after 2015 is hard to miss.</p>
       </div>
       <div id="champ-chart"></div>
     </section>
 
     <!-- TIME MACHINE -->
-    <section class="prose-section dark-section">
+    <section class="prose-section">
       <div class="prose-inner">
-        <h2 class="section-heading">NBA Time Machine</h2>
-        <p>Pick any three-point attempts per game number. See what era that number belongs to and how the meaning of it shifted over time.</p>
+        <h2 class="section-heading">Where does your number land?</h2>
+        <p>Drag the slider to any three-point attempts per game number and see which season that matches. A number that was elite in 2010 is below average today.</p>
       </div>
       <div class="time-machine" id="time-machine">
         <div class="tm-controls">
@@ -144,9 +148,8 @@
       </div>
     </section>
 
-
     <footer class="site-footer">
-      <p>DSC 106 · Final Project · UCSD 2026 &nbsp;·&nbsp; <a href="https://github.com/ryanj06/lab1-dsc106" target="_blank">GitHub</a></p>
+      <p>DSC 106 · Final Project · UCSD 2025 &nbsp;·&nbsp; <a href="https://github.com/ryanj06/lab1-dsc106" target="_blank">GitHub</a></p>
     </footer>
 
     <script type="module" src="main.js"></script>

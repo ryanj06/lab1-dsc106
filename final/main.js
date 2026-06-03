@@ -250,8 +250,26 @@ function buildLineChart() {
        a <strong>${((lastSeason.threePApg/firstSeason.threePApg-1)*100).toFixed(0)}%</strong> increase.`;
   }
 
+  // season marker elements
+  const seasonMarker = g.append("line").attr("class","season-marker").attr("y1",0).attr("y2",ih);
+  const seasonDot    = g.append("circle").attr("class","season-dot").attr("r",6);
+
+  function updateSeasonMarker(season) {
+    const m    = lineMetric;
+    const meta = METRICS[m];
+    const d    = SEASONS.find(s => s.season === season);
+    if (!d) return;
+    const px = x(season);
+    seasonMarker.attr("x1",px).attr("x2",px);
+    seasonDot.attr("cx",px).attr("cy",y(d[m]));
+    document.getElementById("season-readout").textContent = season;
+    document.getElementById("line-annotation").innerHTML =
+      `In <strong>${d.season}</strong>, teams averaged <strong>${METRICS.threePApg.fmt(d.threePApg)}</strong> threes per game — that was <strong>${METRICS.threePAR.fmt(d.threePAR)}</strong> of all field goal attempts.`;
+  }
+
   // expose draw so scrolly can call it
   window._redrawLine = draw;
+  window._updateSeasonMarker = updateSeasonMarker;
   draw();
 
   // metric toggle
@@ -260,7 +278,16 @@ function buildLineChart() {
     d3.select(this).classed("active", true);
     lineMetric = this.dataset.metric;
     draw();
+    const slider = document.getElementById("season-slider");
+    if (slider) updateSeasonMarker(+slider.value);
   });
+
+  // season slider
+  const slider = document.getElementById("season-slider");
+  if (slider) {
+    slider.addEventListener("input", () => updateSeasonMarker(+slider.value));
+    updateSeasonMarker(2003);
+  }
 }
 
 // =====================================================================
@@ -341,66 +368,66 @@ function buildThenNow() {
 }
 
 // =====================================================================
-// VIZ 2 — WIN CORRELATION SCATTER (from games.csv)
+// HORIZONTAL SCROLL CHAMPIONS
 // =====================================================================
+function buildHScroll() {
+  const track = document.getElementById("hscroll-track");
+  if (!track) return;
+
+  const maxVal = d3.max(CHAMPIONS, d => d.threePApg);
+
+  CHAMPIONS.forEach(c => {
+    const isGSW = c.label.includes("GSW");
+    const pct   = (c.threePApg / maxVal) * 80;
+
+    const card = document.createElement("div");
+    card.className = "hscroll-card" + (isGSW ? " gsw" : "");
+    card.innerHTML = `
+      <span class="hscroll-year">${c.label.split(" ")[0]}</span>
+      <span class="hscroll-team">${c.label.split(" ")[1]}</span>
+      <div class="hscroll-bar-wrap">
+        <div class="hscroll-bar" style="height:${pct}px"></div>
+      </div>
+      <span class="hscroll-stat">${c.threePApg}</span>
+      <span class="hscroll-label">threes per game</span>
+    `;
+    track.appendChild(card);
+  });
+
+  // drag to scroll
+  const wrapper = track.parentElement;
+  let isDown = false, startX, scrollLeft;
+  wrapper.addEventListener("mousedown", e => {
+    isDown   = true;
+    startX   = e.pageX - wrapper.offsetLeft;
+    scrollLeft = wrapper.scrollLeft;
+  });
+  wrapper.addEventListener("mouseleave", () => isDown = false);
+  wrapper.addEventListener("mouseup",    () => isDown = false);
+  wrapper.addEventListener("mousemove",  e => {
+    if (!isDown) return;
+    e.preventDefault();
+    const x  = e.pageX - wrapper.offsetLeft;
+    const walk = (x - startX) * 1.5;
+    wrapper.scrollLeft = scrollLeft - walk;
+  });
+}
+
+
 async function buildScatter() {
   const container = document.getElementById("scatter-chart");
   if (!container) return;
 
-  let rawGames;
-  try {
-    rawGames = await d3.csv("season_shooting.csv");
-  } catch (e) {
-    // fallback: synthetic data derived from SEASONS
-    rawGames = null;
-  }
-
-  // Build scatter data: load games.csv, compute per-team-season fg3pct vs winpct
   let scatterData = [];
   try {
-    const games = await d3.csv("../archive/games.csv");
-    const byTeamSeason = d3.rollup(
-      games.filter(d => +d.SEASON >= 2003 && +d.SEASON <= 2021),
-      rows => {
-        const homeRows = rows.filter(r => r.TEAM_ID_home);
-        const awayRows = rows.filter(r => r.VISITOR_TEAM_ID);
-
-        let fg3Sum = 0, wins = 0, count = 0;
-        rows.forEach(r => {
-          const hw = +r.HOME_TEAM_WINS;
-          const hf = parseFloat(r.FG3_PCT_home);
-          const af = parseFloat(r.FG3_PCT_away);
-          if (!isNaN(hf)) { fg3Sum += hf; wins += hw; count++; }
-          if (!isNaN(af)) { fg3Sum += af; wins += (1 - hw); count++; }
-        });
-        return count >= 30 ? { fg3pct: fg3Sum / count, winpct: wins / count } : null;
-      },
-      d => d.SEASON
-    );
-
-    byTeamSeason.forEach((seasonMap, season) => {
-      seasonMap.forEach((val, team) => {
-        if (val) scatterData.push({ season: +season, fg3pct: val.fg3pct, winpct: val.winpct });
-      });
-    });
+    scatterData = await d3.json("final/scatter_data.json");
   } catch(e) {
-    // fallback synthetic scatter from SEASONS data
-    scatterData = SEASONS.map(d => ({
-      season: d.season,
-      fg3pct: d.threePAR / 100,
-      winpct: 0.4 + (d.threePAR - 18) / 100,
-    }));
-  }
-
-  // If games.csv load failed, use synthetic
-  if (!scatterData.length) {
-    scatterData = SEASONS.flatMap(d =>
-      d3.range(8).map(() => ({
-        season: d.season,
-        fg3pct: d.threePAR/100 + (Math.random()-0.5)*0.08,
-        winpct: 0.35 + (d.threePAR/100)*0.8 + (Math.random()-0.5)*0.25,
-      }))
-    );
+    // fallback hardcoded
+    scatterData = [
+      {season:2003,fg3pct:0.187,winpct:0.41},{season:2003,fg3pct:0.211,winpct:0.55},
+      {season:2010,fg3pct:0.223,winpct:0.46},{season:2015,fg3pct:0.318,winpct:0.70},
+      {season:2018,fg3pct:0.368,winpct:0.67},{season:2021,fg3pct:0.411,winpct:0.66},
+    ];
   }
 
   const W = container.clientWidth || 860;
@@ -579,15 +606,15 @@ function buildTimeMachine() {
     // verdict
     const verdict = document.getElementById("tm-verdict");
     if (val <= 20) {
-      verdict.innerHTML = `${val.toFixed(1)} threes/game would've been <strong>average in ~${closest.season}</strong>. By 2021 standards, this is well below the league average of 35.2 — the midrange era.`;
+      verdict.innerHTML = `${val.toFixed(1)} threes a game was pretty normal around <strong>${closest.season}</strong>. By today's standards that number would put you near the bottom of the league.`;
     } else if (val <= 27) {
-      verdict.innerHTML = `<strong>${val.toFixed(1)} threes/game</strong> matches the <strong>${closest.season}</strong> league average. At that time it was normal — today it would make you one of the least three-happy teams in the league.`;
+      verdict.innerHTML = `<strong>${val.toFixed(1)} threes per game</strong> was the league average around <strong>${closest.season}</strong>. Totally normal then. A team shooting that today would be one of the most conservative in the league.`;
     } else if (val <= 33) {
-      verdict.innerHTML = `<strong>${val.toFixed(1)} threes/game</strong> was cutting-edge around <strong>${closest.season}</strong> — Warriors territory. Modern teams at this number are slightly conservative.`;
+      verdict.innerHTML = `<strong>${val.toFixed(1)} threes per game</strong> was considered a lot around <strong>${closest.season}</strong>. Teams at this number now are somewhere in the middle of the pack.`;
     } else if (val <= 38) {
-      verdict.innerHTML = `<strong>${val.toFixed(1)} threes/game</strong> matches the <strong>${closest.season}</strong> league average — solidly modern. This is the range where recent champions operate.`;
+      verdict.innerHTML = `<strong>${val.toFixed(1)} threes per game</strong> is right around the <strong>${closest.season}</strong> league average. This is what a normal modern NBA team looks like.`;
     } else {
-      verdict.innerHTML = `<strong>${val.toFixed(1)} threes/game</strong> is <strong>above the 2021 league average of 35.2</strong>. You're playing the future — this number would've been science fiction in 2003.`;
+      verdict.innerHTML = `<strong>${val.toFixed(1)} threes per game</strong> is above the 2021 league average of 35.2. Only the most three-happy teams in recent years have gotten up here.`;
     }
   }
 
@@ -601,10 +628,10 @@ function buildTimeMachine() {
 // =====================================================================
 // INIT
 // =====================================================================
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   buildLineChart();
   buildThenNow();
-  buildScatter();
+  await buildScatter();
   buildChampions();
   buildTimeMachine();
   initScrolly();

@@ -342,20 +342,19 @@ function initScrolly() {
         });
       }
 
-      // snap slider to era start season and update annotation
+      // snap slider first
       const slider = document.getElementById("season-slider");
+      let snapSeason = 2003;
       if (slider && cfg.seasonRange) {
-        const snapSeason = Math.min(cfg.seasonRange[0], 2021);
+        snapSeason = Math.min(cfg.seasonRange[0], 2021);
         slider.value = snapSeason;
-        if (window._updateSeasonMarker) window._updateSeasonMarker(snapSeason);
       }
 
+      // redraw chart
       if (window._redrawLine) window._redrawLine();
 
-      // force annotation update after redraw
-      if (slider && window._updateSeasonMarker) {
-        window._updateSeasonMarker(+slider.value);
-      }
+      // update annotation AFTER redraw so it doesn't get overwritten
+      if (window._updateSeasonMarker) window._updateSeasonMarker(snapSeason);
     });
   }, { threshold: 0.4 });
 

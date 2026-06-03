@@ -3,118 +3,152 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>The Death of the Midrange: How Analytics Changed the NBA</title>
-    <link rel="stylesheet" href="/lab1-dsc106/style.css" />
+    <title>The Death of the Midrange</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="final.css" />
-    <script type="module" src="/lab1-dsc106/global.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
-    <script type="module" src="main.js"></script>
   </head>
   <body>
-    <article class="final">
-      <header class="hero">
-        <p class="kicker">DSC 106 · Final Project · Initial Prototype</p>
-        <h1>The Death of the Midrange</h1>
-        <p class="subtitle">How analytics changed the way the NBA scores.</p>
-        <p class="byline">
-          By Tijil Chhabra (tchhabra@ucsd.edu), Ryan Jose (rjose@ucsd.edu) &amp;
-          Leo Wiemelt (lwiemelt@ucsd.edu)
-        </p>
-        <p class="byline">Data: NBA Games Dataset (Nathan Lauga, Kaggle)</p>
-      </header>
+    <!-- HERO -->
+    <header class="hero">
+      <div class="hero-inner">
+        <p class="kicker">DSC 106 · Final Project · UCSD</p>
+        <h1 class="hero-title">The Death of<br>the Midrange</h1>
+        <p class="hero-sub">How analytics rewired the NBA's brain and killed the game's most elegant shot.</p>
+        <p class="byline">Tijil Chhabra · Ryan Jose · Leo Wiemelt &nbsp;·&nbsp; Data: NBA Games Dataset (Kaggle)</p>
+        <div class="scroll-hint">
+          <span>scroll to explore</span>
+          <div class="scroll-arrow"></div>
+        </div>
+      </div>
+    </header>
 
-      <section class="intro">
-        <p>
-          Twenty years ago, an NBA offense lived in the midrange: long two-point
-          jumpers, post-ups, and pull-ups from the elbow. Then the analytics
-          movement asked a simple question &mdash; <em>which shots are actually
-          worth the most points?</em> The answer reshaped the league. This
-          explorable explanation lets you move through the seasons and watch the
-          three-point shot take over modern basketball.
-        </p>
-      </section>
+    <!-- INTRO -->
+    <section class="prose-section">
+      <div class="prose-inner">
+        <p class="lead">Twenty years ago, an NBA offense lived in the midrange. Long two-point jumpers, post-ups, pull-ups from the elbow. That was just how basketball was played. Then the analytics movement asked a simple question: <em>which shots are actually worth the most points?</em></p>
+        <p>The answer changed everything. Scroll through the eras below and watch the three-point shot slowly, then all at once, take over the entire sport.</p>
+      </div>
+    </section>
 
-      <!-- ===== INTERACTIVE VIZ 1: season scrubber + metric toggle ===== -->
-      <section class="viz-block">
-        <h2>The league moved beyond the arc</h2>
-        <p class="caption">
-          Drag the slider to scrub through seasons, or switch the metric to see
-          how shot volume and efficiency rose together. Hover any point for the
-          exact value.
-        </p>
+    <!-- SCROLLYTELLING SECTION -->
+    <section class="scroll-section" id="scroll-section">
+      <div class="scroll-sticky" id="scroll-sticky">
+        <div class="sticky-header">
+          <div class="era-badge" id="era-badge">Era 1</div>
+          <h2 class="era-title" id="era-title">The Midrange Reigned</h2>
+          <p class="era-desc" id="era-desc">Teams shot ~15 threes per game. Kobe, Duncan, Dirk ruled the elbow.</p>
+        </div>
 
+        <!-- METRIC TOGGLE -->
         <div class="controls">
-          <div class="metric-toggle" role="group" aria-label="Choose metric">
+          <div class="metric-toggle" role="group">
             <button data-metric="threePAR" class="active">3PA share of shots</button>
             <button data-metric="threePApg">3PA per game</button>
             <button data-metric="ptsPerFGA">Points per shot</button>
           </div>
-          <label class="slider-label">
-            Season: <strong id="season-readout">2003</strong>
-            <input id="season-slider" type="range" min="2003" max="2021" value="2003" step="1" />
-          </label>
         </div>
 
         <div id="line-chart"></div>
-        <p id="line-annotation" class="annotation"></p>
-      </section>
 
-      <!-- ===== INTERACTIVE VIZ 2: champions bar chart with hover ===== -->
-      <section class="viz-block">
-        <h2>Champions led the revolution</h2>
-        <p class="caption">
-          Recent NBA champions, ranked by how many threes they launched per
-          game. Hover a bar for detail &mdash; notice the jump after the 2015
-          Warriors.
-        </p>
-        <div id="champ-chart"></div>
-      </section>
+        <div class="annotation-box" id="line-annotation"></div>
+      </div>
 
-      <!-- ===== WRITEUP (required) ===== -->
-      <section class="writeup">
-        <h2>Prototype Writeup</h2>
+      <!-- SCROLL TRIGGER PANELS -->
+      <div class="scroll-panels" id="scroll-panels">
+        <div class="scroll-panel" data-era="0">
+          <div class="panel-content">
+            <span class="panel-year">2003 – 2010</span>
+            <h3>The Midrange Reigned</h3>
+            <p>The NBA ran on post-ups, pull-ups, and long twos. Three-pointers were a bonus, not a strategy. The midrange jumper was art.</p>
+            <div class="panel-stat"><span class="stat-num">14.9</span><span class="stat-label">threes per game in 2003</span></div>
+          </div>
+        </div>
+        <div class="scroll-panel" data-era="1">
+          <div class="panel-content">
+            <span class="panel-year">2011 – 2014</span>
+            <h3>Analytics Enter the Chat</h3>
+            <p>Moneyball thinking spread to basketball. Front offices started tracking expected points per shot. The midrange was exposed as the worst shot on the floor, lowest return, highest cost.</p>
+            <div class="panel-stat"><span class="stat-num">+43%</span><span class="stat-label">rise in 3PA from 2003</span></div>
+          </div>
+        </div>
+        <div class="scroll-panel" data-era="2">
+          <div class="panel-content">
+            <span class="panel-year">2015 – 2017</span>
+            <h3>Curry Changes Everything</h3>
+            <p>Steph Curry broke the game. The 2015 Warriors won a championship firing 31 threes a game, a number that would have seemed absurd a decade earlier. Every front office scrambled to copy them.</p>
+            <div class="panel-stat"><span class="stat-num">31.3</span><span class="stat-label">threes/game — 2015 champions</span></div>
+          </div>
+        </div>
+        <div class="scroll-panel" data-era="3">
+          <div class="panel-content">
+            <span class="panel-year">2018 – 2021</span>
+            <h3>The New Normal</h3>
+            <p>The three-pointer became the default. Teams that resisted fell behind. The midrange was not just unfashionable anymore. It was basically gone.</p>
+            <div class="panel-stat"><span class="stat-num">40.1%</span><span class="stat-label">of all shots were threes in 2021</span></div>
+          </div>
+        </div>
+        <div class="scroll-panel" data-era="4">
+          <div class="panel-content">
+            <span class="panel-year">2022 – 2030</span>
+            <h3>Where Does It End?</h3>
+            <p>If the trend holds, teams could average over 45 threes a game by 2030. The dashed line shows the projection and the shaded band shows the range of uncertainty.</p>
+            <div class="panel-stat"><span class="stat-num">~45</span><span class="stat-label">projected threes/game by 2030</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-        <h3>What we&rsquo;ve done so far</h3>
-        <p>
-          The prototype originated with the NBA Games Dataset provided by Nathan
-          Lauga on Kaggle; specifically, the <code>games_details.csv</code>
-          dataset, containing over 600,000 rows of offensive statistics for
-          players per game. Given that this CSV is too large to transmit to the
-          browser, we reduced the data set to league-level metrics per season,
-          namely, average three-point attempts per game, average percentage of
-          shots attempted from beyond the arc among all field goal attempts, and
-          average points scored per shot. In addition, we added a summary metric
-          for each champion, regarding the amount of three-point shooting.
-          Finally, we recreated the static matplotlib graphs as dynamic D3.js
-          graphs, with an option to switch between metrics on the first and a
-          champions bar chart on the second graph, including tooltip
-          functionality.
-        </p>
+    <!-- THEN VS NOW -->
+    <section class="prose-section">
+      <div class="prose-inner">
+        <h2 class="section-heading">Then vs. Now</h2>
+        <p>Two decades. One transformation. Here's how the numbers compare.</p>
+      </div>
+      <div class="then-now-grid" id="then-now"></div>
+    </section>
 
-        <h3>The most challenging design aspect</h3>
-        <p>
-          The most difficult design choice, however, was communicating a
-          coherent narrative without drowning the user in 600,000 data points or
-          an endless amount of text. Decisions had to be made regarding what
-          kind of aggregations were truly illustrative of the &ldquo;death of
-          the midrange&rdquo; story, and what interactions conveyed its
-          significance rather than merely being superficial. Browsing by
-          seasons, for instance, only really makes sense if the axes are locked
-          down and allow one to perceive the real trend, not an illusion due to
-          axis rescaling. We also grappled with how far pre-computation should
-          be taken server-side versus client-side, as responsiveness required
-          manageable and clean data. The next major challenge facing us is
-          combining individual and team-level analysis with this league-wide
-          trend.
-        </p>
-      </section>
+    <!-- WIN CORRELATION -->
+    <section class="prose-section dark-section">
+      <div class="prose-inner">
+        <h2 class="section-heading">Does shooting more threes actually win games?</h2>
+        <p>Each dot below is one team, one season. There is a clear pattern but it is not as simple as shoot more threes and win more games. The best teams found the right balance.</p>
+      </div>
+      <div id="scatter-chart"></div>
+    </section>
 
-      <footer class="final-footer">
-        <p>
-          Repository:
-          <a href="https://github.com/tijilchhabra1729/lab1-dsc106">github.com/tijilchhabra1729/lab1-dsc106</a>
-        </p>
-      </footer>
-    </article>
+    <!-- CHAMPIONS -->
+    <section class="prose-section">
+      <div class="prose-inner">
+        <h2 class="section-heading">Champions led the revolution</h2>
+        <p>Every NBA champion since 2012, ranked by how many threes they shot per game. Look at the jump after the 2015 Warriors. The blueprint changed basically overnight.</p>
+      </div>
+      <div id="champ-chart"></div>
+    </section>
+
+    <!-- TIME MACHINE -->
+    <section class="prose-section dark-section">
+      <div class="prose-inner">
+        <h2 class="section-heading">NBA Time Machine</h2>
+        <p>Pick any three-point attempts per game number. See what era that number belongs to and how the meaning of it shifted over time.</p>
+      </div>
+      <div class="time-machine" id="time-machine">
+        <div class="tm-controls">
+          <label class="tm-label">Your team shoots <strong id="tm-val">28</strong> threes per game</label>
+          <input type="range" id="tm-slider" min="10" max="45" value="28" step="0.5" />
+        </div>
+        <div id="tm-chart"></div>
+        <div class="tm-verdict" id="tm-verdict"></div>
+      </div>
+    </section>
+
+
+    <footer class="site-footer">
+      <p>DSC 106 · Final Project · UCSD 2026 &nbsp;·&nbsp; <a href="https://github.com/ryanj06/lab1-dsc106" target="_blank">GitHub</a></p>
+    </footer>
+
+    <script type="module" src="main.js"></script>
   </body>
 </html>

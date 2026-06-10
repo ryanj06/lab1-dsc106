@@ -674,7 +674,7 @@ async function buildPredictor() {
 
     let ctxVerdict;
     if (winPct >= 0.70) {
-      ctxVerdict = `Projected at <strong>${wins} wins</strong> — dynastic. This is Warriors 2016 territory. An  All-time great team.`;
+      ctxVerdict = `Projected at <strong>${wins} wins</strong> — dynastic. This is Warriors 2016 territory. An  an all-time great team.`;
     } else if (winPct >= 0.65) {
       ctxVerdict = `Projected at <strong>${wins} wins</strong> — a title contender. This team is dangerous and everyone knows it.`;
     } else if (winPct >= 0.60) {

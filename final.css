@@ -1,8 +1,12 @@
+/* =====================================================
+   THE DEATH OF THE MIDRANGE — standalone dark styles
+   ===================================================== */
+
 :root {
-  --orange: #F5B800;
-  --orange-dim: rgba(245, 184, 0, 0.15);
-  --blue: #C8102E;
-  --blue-dim: rgba(200, 16, 46, 0.15);
+  --orange: #e8702a;
+  --orange-dim: rgba(232, 112, 42, 0.15);
+  --blue: #1d6fb8;
+  --blue-dim: rgba(29, 111, 184, 0.15);
   --bg: #0d0d0f;
   --bg2: #141416;
   --bg3: #1c1c20;
@@ -29,7 +33,7 @@ body {
   overflow-x: hidden;
 }
 
-
+/* ---- HERO ---- */
 .hero {
   min-height: 100vh;
   display: flex;
@@ -37,8 +41,8 @@ body {
   justify-content: center;
   text-align: center;
   position: relative;
-  background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(245,184,0,0.08) 0%, transparent 70%),
-              radial-gradient(ellipse 60% 40% at 20% 80%, rgba(200,16,46,0.06) 0%, transparent 60%),
+  background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(232,112,42,0.08) 0%, transparent 70%),
+              radial-gradient(ellipse 60% 40% at 20% 80%, rgba(29,111,184,0.06) 0%, transparent 60%),
               var(--bg);
   border-bottom: 1px solid var(--border);
 }
@@ -126,7 +130,7 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
-
+/* ---- PROSE SECTIONS ---- */
 .prose-section {
   padding: 5rem 2rem;
 }
@@ -182,7 +186,7 @@ code {
   color: var(--orange);
 }
 
-
+/* ---- SCROLLYTELLING ---- */
 .scroll-section {
   position: relative;
   display: flex;
@@ -237,7 +241,7 @@ code {
   transition: all 0.4s ease;
 }
 
-
+/* controls */
 .controls {
   margin-bottom: 0.75rem;
 }
@@ -274,7 +278,7 @@ code {
   color: var(--text);
 }
 
-
+/* annotation */
 .annotation-box {
   margin-top: 0.75rem;
   padding: 0.65rem 1rem;
@@ -287,7 +291,7 @@ code {
   transition: all 0.3s ease;
 }
 
-
+/* scroll panels */
 .scroll-panels {
   width: 40%;
   padding: 0;
@@ -355,7 +359,7 @@ code {
   margin-top: 0.2rem;
 }
 
-
+/* ---- THEN VS NOW ---- */
 .then-now-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -426,7 +430,7 @@ code {
   margin-top: 0.5rem;
 }
 
-
+/* ---- SVG / D3 ---- */
 #line-chart, #scatter-chart, #champ-chart, #tm-chart {
   width: 100%;
   flex: 1;
@@ -491,7 +495,7 @@ code {
   stroke-width: 2;
 }
 
-
+/* projection */
 .proj-line {
   fill: none;
   stroke: var(--orange);
@@ -512,7 +516,7 @@ code {
   opacity: 0.8;
 }
 
-
+/* callouts */
 .callout-line {
   stroke: rgba(255,255,255,0.2);
   stroke-width: 1;
@@ -525,7 +529,7 @@ code {
   font-family: var(--font-mono);
 }
 
-
+/* champ bars */
 .champ-bar {
   fill: var(--blue);
   transition: fill 0.15s;
@@ -540,7 +544,7 @@ code {
   font-family: var(--font-mono);
 }
 
-
+/* scatter */
 .scatter-dot {
   fill: var(--orange);
   opacity: 0.5;
@@ -557,7 +561,7 @@ code {
   fill: none;
 }
 
-
+/* tooltip */
 .viz-tooltip {
   position: fixed;
   pointer-events: none;
@@ -573,7 +577,7 @@ code {
   font-family: var(--font-body);
 }
 
-
+/* ---- TIME MACHINE ---- */
 .time-machine {
   max-width: 860px;
   margin: 0 auto;
@@ -619,140 +623,7 @@ code {
 
 .tm-verdict strong { color: var(--orange); }
 
-
-.predictor {
-max-width: 860px;
-margin: 0 auto;
-}
-
-.predictor-controls {
-margin-bottom: 2rem;
-}
-
-.predictor-input-row {
-display: flex;
-gap: 2rem;
-flex-wrap: wrap;
-}
-
-.predictor-knob {
-flex: 1;
-min-width: 200px;
-}
-
-.predictor-knob-label {
-display: block;
-font-family: var(--font-mono);
-font-size: 0.72rem;
-letter-spacing: 0.12em;
-text-transform: uppercase;
-color: var(--text3);
-margin-bottom: 0.6rem;
-}
-
-.predictor-slider-wrap {
-display: flex;
-align-items: center;
-gap: 1rem;
-}
-
-.predictor-slider-wrap input[type=range] {
-flex: 1;
-accent-color: var(--orange);
-cursor: pointer;
-}
-
-.predictor-val {
-font-family: var(--font-display);
-font-size: 1.6rem;
-color: var(--orange);
-min-width: 60px;
-text-align: right;
-}
-
-.predictor-output {
-display: flex;
-align-items: center;
-gap: 2rem;
-margin-bottom: 2rem;
-flex-wrap: wrap;
-}
-
-.pred-result-card {
-background: var(--surface);
-border: 1px solid var(--border);
-border-radius: 12px;
-padding: 1.5rem 2rem;
-text-align: center;
-min-width: 180px;
-border-top: 3px solid var(--orange);
-transition: border-color 0.3s;
-}
-
-.pred-win-pct {
-font-family: var(--font-display);
-font-size: 3.5rem;
-color: var(--orange);
-line-height: 1;
-transition: color 0.3s;
-}
-
-.pred-win-label {
-font-family: var(--font-mono);
-font-size: 0.68rem;
-letter-spacing: 0.1em;
-text-transform: uppercase;
-color: var(--text3);
-margin-top: 0.3rem;
-}
-
-.pred-ci {
-font-family: var(--font-mono);
-font-size: 0.72rem;
-color: var(--text3);
-margin-top: 0.5rem;
-}
-
-.pred-context {
-flex: 1;
-font-size: 0.95rem;
-color: var(--text2);
-line-height: 1.7;
-}
-
-.pred-context strong { color: var(--text); }
-
-#predictor-chart {
-width: 100%;
-height: 300px;
-margin-bottom: 1rem;
-}
-
-.pred-note {
-font-family: var(--font-mono);
-font-size: 0.68rem;
-color: var(--text3);
-line-height: 1.5;
-}
-
-.pred-marker-line {
-stroke: var(--orange);
-stroke-width: 2;
-stroke-dasharray: 6 4;
-opacity: 0.9;
-}
-
-.pred-marker-dot {
-fill: var(--orange);
-stroke: var(--bg2);
-stroke-width: 2;
-}
-
-.pred-band {
-fill: var(--orange);
-opacity: 0.1;
-}
-
+/* ---- FOOTER ---- */
 .site-footer {
   padding: 3rem 2rem;
   text-align: center;
@@ -769,7 +640,7 @@ opacity: 0.1;
 
 .site-footer a:hover { text-decoration: underline; }
 
-
+/* ---- RESPONSIVE ---- */
 @media (max-width: 768px) {
   .scroll-section { flex-direction: column; }
   .scroll-sticky { position: relative; height: auto; width: 100%; border-right: none; border-bottom: 1px solid var(--border); }

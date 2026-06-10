@@ -676,13 +676,13 @@ async function buildPredictor() {
     if (winPct >= 0.60) {
       ctxVerdict = `Projected at <strong>${wins} wins</strong> — a legitimate playoff contender. Teams shooting this efficiently from three are usually in the mix come April.`;
     } else if (winPct >= 0.50) {
-      ctxVerdict = `Projected at <strong>${wins} wins</strong> — right on the playoff bubble. Needs more than 3PT% to push into contention.`;
+      ctxVerdict = `Projected at <strong>${wins} wins</strong> — solid but not scary. This team makes the playoffs and likely loses in the first round.`;
     } else if (winPct >= 0.40) {
       ctxVerdict = `Projected at <strong>${wins} wins</strong> — a lottery team. Teams at this shooting rate are usually watching the playoffs from home.`;
     } else {
       ctxVerdict = `Projected at <strong>${wins} wins</strong> — deep in rebuilding territory. That shooting rate would rank near the bottom of the modern NBA.`;
     }
-    ctxVerdict += ` The confidence interval shows how much variation exists beyond shooting percentage alone.`;
+    ctxVerdict += ` Win rate depends on more than shooting — this range reflects everything else the model can't account for.`;
     document.getElementById("pred-context").innerHTML = ctxVerdict;
 
     const clampedX = Math.max(0.28, Math.min(0.42, fg3));

@@ -233,8 +233,8 @@ function buildLineChart() {
     const px = x(season);
     seasonMarker.attr("x1",px).attr("x2",px);
     seasonDot.attr("cx",px).attr("cy",y(d[m]));
-    document.getElementById("season-readout").textContent = season;
-    document.getElementById("line-annotation").innerHTML =
+    const readout = document.getElementById("season-readout"); if (readout) readout.textContent = season;
+    const ann = document.getElementById("line-annotation"); if (ann) ann.innerHTML =
       `In <strong>${d.season}</strong>, teams averaged <strong>${METRICS.threePApg.fmt(d.threePApg)}</strong> threes per game — that was <strong>${METRICS.threePAR.fmt(d.threePAR)}</strong> of all field goal attempts.`;
   }
 
@@ -417,8 +417,8 @@ async function buildScatter() {
     ];
   }
 
-  const W = container.clientWidth || 860;
-  const H = 380;
+  const W = container.getBoundingClientRect().width || window.innerWidth * 0.85 || 860;
+  const H = 420;
   const sm = { top:20, right:20, bottom:44, left:52 };
   const iw = W - sm.left - sm.right;
   const ih = H - sm.top - sm.bottom;
@@ -459,9 +459,9 @@ function buildChampions() {
   const container = document.getElementById("champ-chart");
   if (!container) return;
 
-  const W = container.clientWidth || 860;
-  const H = 360;
-  const cm = { top:20, right:20, bottom:64, left:52 };
+  const W = container.getBoundingClientRect().width || window.innerWidth * 0.85 || 860;
+  const H = 420;
+  const cm = { top:20, right:30, bottom:80, left:60 };
   const iw = W - cm.left - cm.right;
   const ih = H - cm.top - cm.bottom;
 

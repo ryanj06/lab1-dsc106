@@ -434,9 +434,9 @@ code {
 }
 
 #scatter-chart, #champ-chart {
-  max-width: 860px;
+  max-width: 100%;
   margin: 0 auto;
-  height: 400px;
+  height: 450px;
 }
 
 #tm-chart { height: 260px; }

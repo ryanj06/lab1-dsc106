@@ -101,12 +101,12 @@ function buildLineChart() {
 
   const defs = svg.append("defs");
   const grad = defs.append("linearGradient").attr("id", "lineGrad").attr("x1","0%").attr("x2","100%");
-  grad.append("stop").attr("offset","0%").attr("stop-color","#C8102E");
-  grad.append("stop").attr("offset","100%").attr("stop-color","#F5B800");
+  grad.append("stop").attr("offset","0%").attr("stop-color","#888780");
+  grad.append("stop").attr("offset","100%").attr("stop-color","#00D4FF");
 
   const gradArea = defs.append("linearGradient").attr("id","areaGrad").attr("x1","0%").attr("x2","100%");
-  gradArea.append("stop").attr("offset","0%").attr("stop-color","#C8102E").attr("stop-opacity","0.2");
-  gradArea.append("stop").attr("offset","100%").attr("stop-color","#F5B800").attr("stop-opacity","0.15");
+  gradArea.append("stop").attr("offset","0%").attr("stop-color","#888780").attr("stop-opacity","0.2");
+  gradArea.append("stop").attr("offset","100%").attr("stop-color","#00D4FF").attr("stop-opacity","0.15");
 
   const x = d3.scaleLinear().domain([2003, 2030]).range([0, iw]);
   const y = d3.scaleLinear().range([ih, 0]);
@@ -169,7 +169,7 @@ function buildLineChart() {
     dotsG.selectAll("circle").data(SEASONS).join("circle")
       .attr("class","trend-dot")
       .attr("r", 4)
-      .attr("fill", d => d3.interpolateRgb("#C8102E","#F5B800")((d.season-2003)/18))
+      .attr("fill", d => d3.interpolateRgb("#555553","#00D4FF")((d.season-2003)/18))
       .attr("cx", d => x(d.season))
       .on("mouseenter", (ev,d) => showTip(`<strong>${d.season}</strong><br>${meta.label}: <strong>${meta.fmt(d[m])}</strong>`, ev))
       .on("mousemove",  (ev,d) => showTip(`<strong>${d.season}</strong><br>${meta.label}: <strong>${meta.fmt(d[m])}</strong>`, ev))
@@ -429,7 +429,7 @@ async function buildScatter() {
 
   const sx = d3.scaleLinear().domain(d3.extent(scatterData, d=>d.fg3pct)).nice().range([0,iw]);
   const sy = d3.scaleLinear().domain([0.2, 0.8]).nice().range([ih,0]);
-  const sc = d3.scaleSequential().domain([2003,2021]).interpolator(d3.interpolateRgb("#C8102E","#F5B800"));
+  const sc = d3.scaleSequential().domain([2003,2021]).interpolator(d3.interpolateRgb("#555553","#00D4FF"));
 
   g.append("g").attr("class","axis").attr("transform",`translate(0,${ih})`).call(d3.axisBottom(sx).tickFormat(d3.format(".0%")).ticks(6));
   g.append("g").attr("class","axis").call(d3.axisLeft(sy).tickFormat(d3.format(".0%")).ticks(6));
@@ -499,7 +499,7 @@ function buildChampions() {
     .attr("class","champ-bar")
     .attr("x", d=>cx(d.label)).attr("width", cx.bandwidth())
     .attr("y", ih).attr("height",0)
-    .attr("fill", d => d.label.includes("GSW") ? "#F5B800" : "#C8102E")
+    .attr("fill", d => d.label.includes("GSW") ? "#00D4FF" : "#888780")
     .on("mouseenter", function(ev,d) {
       d3.select(this).classed("hover",true);
       showTip(`<strong>${d.label}</strong><br>${d.threePApg} threes/game`,ev);
@@ -540,7 +540,7 @@ function buildTimeMachine() {
   g.append("text").attr("class","axis-title").attr("transform","rotate(-90)").attr("x",-ih/2).attr("y",-38).attr("text-anchor","middle").text("3PA/game");
 
   const lineGen = d3.line().x(d=>x(d.season)).y(d=>y(d.threePApg)).curve(d3.curveMonotoneX);
-  g.append("path").datum(SEASONS).attr("fill","none").attr("stroke","#C8102E").attr("stroke-width",2).attr("d",lineGen);
+  g.append("path").datum(SEASONS).attr("fill","none").attr("stroke","#888780").attr("stroke-width",2).attr("d",lineGen);
 
   const userLine = g.append("line").attr("class","season-marker")
     .attr("x1",0).attr("x2",iw).attr("y1",y(28)).attr("y2",y(28));
@@ -550,11 +550,11 @@ function buildTimeMachine() {
   g.selectAll("circle.tm-dot").data(SEASONS).join("circle")
     .attr("class","tm-dot")
     .attr("cx",d=>x(d.season)).attr("cy",d=>y(d.threePApg)).attr("r",3)
-    .attr("fill","#C8102E").attr("opacity",0.7);
+    .attr("fill","#888780").attr("opacity",0.7);
 
   function update(val) {
     document.getElementById("tm-val").textContent = val.toFixed(1);
-    userLine.transition().duration(100).attr("y1",y(val)).attr("y2",y(val));
+    userLine.transition().duration(30).attr("y1",y(val)).attr("y2",y(val));
 
     let closest = SEASONS[0], minDiff = Infinity;
     SEASONS.forEach(d => {
@@ -562,7 +562,7 @@ function buildTimeMachine() {
       if (diff < minDiff) { minDiff = diff; closest = d; }
     });
 
-    intersectDot.transition().duration(100)
+    intersectDot.transition().duration(30)
       .attr("cx",x(closest.season)).attr("cy",y(closest.threePApg));
 
     const sorted = [...SEASONS].sort((a,b)=>a.threePApg-b.threePApg);
@@ -570,15 +570,15 @@ function buildTimeMachine() {
 
     const verdict = document.getElementById("tm-verdict");
     if (val <= 20) {
-      verdict.innerHTML = `${val.toFixed(1)} threes a game was pretty normal around <strong>${closest.season}</strong>. By today's standards that number would put you near the bottom of the league.`;
+      verdict.innerHTML = `<strong>${val.toFixed(1)} threes per game</strong> matched the league around <strong>${closest.season}</strong>. By today's standards that would put you dead last — not even close to average.`;
     } else if (val <= 27) {
-      verdict.innerHTML = `<strong>${val.toFixed(1)} threes per game</strong> was the league average around <strong>${closest.season}</strong>. Totally normal then. A team shooting that today would be one of the most conservative in the league.`;
+      verdict.innerHTML = `<strong>${val.toFixed(1)} threes per game</strong> was league average around <strong>${closest.season}</strong>. Normal at the time, but a team shooting that today would be one of the most conservative in the league.`;
     } else if (val <= 33) {
-      verdict.innerHTML = `<strong>${val.toFixed(1)} threes per game</strong> was considered a lot around <strong>${closest.season}</strong>. Teams at this number now are somewhere in the middle of the pack.`;
+      verdict.innerHTML = `<strong>${val.toFixed(1)} threes per game</strong> was considered high-volume around <strong>${closest.season}</strong>. Today that same number puts you somewhere in the middle of the pack.`;
     } else if (val <= 38) {
-      verdict.innerHTML = `<strong>${val.toFixed(1)} threes per game</strong> is right around the <strong>${closest.season}</strong> league average. This is what a normal modern NBA team looks like.`;
+      verdict.innerHTML = `<strong>${val.toFixed(1)} threes per game</strong> matches what teams were doing around <strong>${closest.season}</strong>. This is what a typical modern NBA team looks like.`;
     } else {
-      verdict.innerHTML = `<strong>${val.toFixed(1)} threes per game</strong> is above the 2021 league average of 35.2. Only the most three-happy teams in recent years have gotten up here.`;
+      verdict.innerHTML = `<strong>${val.toFixed(1)} threes per game</strong> is above the 2021 league average of 35.2 — only the most three-heavy teams in recent history have reached this level.`;
     }
   }
 
@@ -651,7 +651,7 @@ async function buildPredictor() {
     .attr("cx", d => px(Math.max(0.28, Math.min(0.42, d.fg3pct))))
     .attr("cy", d => py(Math.max(0.15, Math.min(0.80, d.winpct))))
     .attr("r", 2.5)
-    .attr("fill", d => d3.interpolateRgb("#C8102E", "#F5B800")((d.season - 2003) / 18))
+    .attr("fill", d => d3.interpolateRgb("#888780", "#00D4FF")((d.season - 2003) / 18))
     .attr("opacity", 0.3)
     .on("mouseenter", (ev, d) => showTip(`<strong>${d.team} ${d.season}</strong><br>3PT%: ${(d.fg3pct * 100).toFixed(1)}%<br>Win%: ${(d.winpct * 100).toFixed(1)}%`, ev))
     .on("mousemove",  (ev, d) => showTip(`<strong>${d.team} ${d.season}</strong><br>3PT%: ${(d.fg3pct * 100).toFixed(1)}%<br>Win%: ${(d.winpct * 100).toFixed(1)}%`, ev))
@@ -672,10 +672,18 @@ async function buildPredictor() {
     document.getElementById("pred-ci").textContent =
       `95% CI: ${(lo * 100).toFixed(1)}% – ${(hi * 100).toFixed(1)}%`;
 
-    const tier = winPct >= 0.60 ? "playoff contender" : winPct >= 0.50 ? "bubble team" : winPct >= 0.40 ? "lottery team" : "rebuilding";
-    const era = fg3 < 0.32 ? "bottom of the league in 2021" : fg3 < 0.35 ? "league average (2021)" : fg3 < 0.38 ? "above average shooter" : "elite 3PT team";
-    document.getElementById("pred-context").innerHTML =
-      `A team shooting <strong>${(fg3 * 100).toFixed(1)}%</strong> from three projects to win around <strong>${wins} games</strong> — that's a <strong>${tier}</strong>. At that shooting rate they'd be considered <strong>${era}</strong>. The confidence interval reflects how much variation exists beyond shooting percentage alone.`;
+    let ctxVerdict;
+    if (winPct >= 0.60) {
+      ctxVerdict = `Projected at <strong>${wins} wins</strong> — a legitimate playoff contender. Teams shooting this efficiently from three are usually in the mix come April.`;
+    } else if (winPct >= 0.50) {
+      ctxVerdict = `Projected at <strong>${wins} wins</strong> — right on the playoff bubble. Needs more than 3PT% to push into contention.`;
+    } else if (winPct >= 0.40) {
+      ctxVerdict = `Projected at <strong>${wins} wins</strong> — a lottery team. Teams at this shooting rate are usually watching the playoffs from home.`;
+    } else {
+      ctxVerdict = `Projected at <strong>${wins} wins</strong> — deep in rebuilding territory. That shooting rate would rank near the bottom of the modern NBA.`;
+    }
+    ctxVerdict += ` The confidence interval shows how much variation exists beyond shooting percentage alone.`;
+    document.getElementById("pred-context").innerHTML = ctxVerdict;
 
     const clampedX = Math.max(0.28, Math.min(0.42, fg3));
     markerLine.attr("x1", px(clampedX)).attr("x2", px(clampedX));

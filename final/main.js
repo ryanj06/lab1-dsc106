@@ -1,9 +1,3 @@
-// The Death of the Midrange — main.js
-// D3 v7 · linear regression in vanilla JS · scrollytelling
-
-// =====================================================================
-// DATA
-// =====================================================================
 const SEASONS = [
   { season: 2003, threePApg: 14.9, threePAR: 18.7, ptsPerFGA: 1.169 },
   { season: 2004, threePApg: 15.7, threePAR: 19.7, ptsPerFGA: 1.212 },
@@ -53,9 +47,6 @@ const ERA_CONFIG = [
   { badge: "Era 5", title: "Where Does It End?",          desc: "The dashed line projects the trend to 2030. The band shows uncertainty.", seasonRange: [2022, 2030], metric: "threePApg" },
 ];
 
-// =====================================================================
-// HELPERS
-// =====================================================================
 const tooltip = d3.select("body").append("div").attr("class", "viz-tooltip").style("opacity", 0);
 
 function showTip(html, event) {
@@ -66,7 +57,6 @@ function showTip(html, event) {
 }
 function hideTip() { tooltip.transition().duration(120).style("opacity", 0); }
 
-// Linear regression: returns { slope, intercept, se } for confidence band
 function linReg(data, xKey, yKey) {
   const n   = data.length;
   const mx  = d3.mean(data, d => d[xKey]);
@@ -87,12 +77,10 @@ function projPoint(reg, x, t = 1.96) {
   return { x, y: Math.max(0, y), lower: Math.max(0, y - t * seHat), upper: y + t * seHat };
 }
 
-// =====================================================================
-// VIZ 1 — SCROLLY LINE CHART
-// =====================================================================
 let lineMetric = "threePApg";
 let highlightRange = null;
 let showProjection = false;
+let isSnapping = false; // true when scrolly is driving — skip transition so marker stays in sync
 
 const M = { top: 20, right: 30, bottom: 42, left: 52 };
 
@@ -111,15 +99,14 @@ function buildLineChart() {
 
   const g = svg.append("g").attr("transform", `translate(${M.left},${M.top})`);
 
-  // gradient def
   const defs = svg.append("defs");
   const grad = defs.append("linearGradient").attr("id", "lineGrad").attr("x1","0%").attr("x2","100%");
-  grad.append("stop").attr("offset","0%").attr("stop-color","#1d6fb8");
-  grad.append("stop").attr("offset","100%").attr("stop-color","#e8702a");
+  grad.append("stop").attr("offset","0%").attr("stop-color","#C8102E");
+  grad.append("stop").attr("offset","100%").attr("stop-color","#F5B800");
 
   const gradArea = defs.append("linearGradient").attr("id","areaGrad").attr("x1","0%").attr("x2","100%");
-  gradArea.append("stop").attr("offset","0%").attr("stop-color","#1d6fb8").attr("stop-opacity","0.2");
-  gradArea.append("stop").attr("offset","100%").attr("stop-color","#e8702a").attr("stop-opacity","0.15");
+  gradArea.append("stop").attr("offset","0%").attr("stop-color","#C8102E").attr("stop-opacity","0.2");
+  gradArea.append("stop").attr("offset","100%").attr("stop-color","#F5B800").attr("stop-opacity","0.15");
 
   const x = d3.scaleLinear().domain([2003, 2030]).range([0, iw]);
   const y = d3.scaleLinear().range([ih, 0]);
@@ -127,31 +114,25 @@ function buildLineChart() {
   const xAxisG = g.append("g").attr("class","axis").attr("transform",`translate(0,${ih})`);
   const yAxisG = g.append("g").attr("class","axis");
 
-  // grid
   const gridG = g.append("g").attr("class","grid");
 
-  // axis labels
   g.append("text").attr("class","axis-title")
     .attr("x", iw/2).attr("y", ih + 36).attr("text-anchor","middle").text("Season");
   const yTitle = g.append("text").attr("class","axis-title")
     .attr("transform","rotate(-90)").attr("x",-ih/2).attr("y",-40).attr("text-anchor","middle");
 
-  // highlight band for era
   const highlightRect = g.append("rect").attr("class","era-highlight")
     .attr("y",0).attr("height",ih).attr("opacity",0)
     .attr("fill","rgba(232,112,42,0.06)").attr("rx",4);
 
-  // projection band + line
   const projBandPath = g.append("path").attr("class","proj-band");
   const projLinePath = g.append("path").attr("class","proj-line");
   const projLabel    = g.append("text").attr("class","proj-label");
 
-  // area + line
   const areaPath = g.append("path").attr("class","trend-area").attr("fill","url(#areaGrad)");
   const linePath = g.append("path").attr("class","trend-line").attr("stroke","url(#lineGrad)");
   const dotsG    = g.append("g");
 
-  // callout annotations
   const callouts = [
     { season: 2015, text: "Warriors dynasty begins" },
     { season: 2012, text: "Analytics era" },
@@ -167,10 +148,11 @@ function buildLineChart() {
 
     y.domain([0, yMax]).nice();
 
-    xAxisG.transition().duration(500).call(
+    const dur = isSnapping ? 0 : 600;
+    xAxisG.transition().duration(dur).call(
       d3.axisBottom(x).tickFormat(d3.format("d")).ticks(8)
     );
-    yAxisG.transition().duration(500).call(d3.axisLeft(y).ticks(6));
+    yAxisG.transition().duration(dur).call(d3.axisLeft(y).ticks(6));
     yTitle.text(meta.label);
 
     gridG.selectAll("line").data(y.ticks(6)).join("line")
@@ -181,20 +163,19 @@ function buildLineChart() {
     const lineGen = d3.line().x(d=>x(d.season)).y(d=>y(d[m])).curve(d3.curveMonotoneX);
     const areaGen = d3.area().x(d=>x(d.season)).y0(ih).y1(d=>y(d[m])).curve(d3.curveMonotoneX);
 
-    linePath.datum(SEASONS).transition().duration(600).attr("d", lineGen);
-    areaPath.datum(SEASONS).transition().duration(600).attr("d", areaGen);
+    linePath.datum(SEASONS).transition().duration(dur).attr("d", lineGen);
+    areaPath.datum(SEASONS).transition().duration(dur).attr("d", areaGen);
 
     dotsG.selectAll("circle").data(SEASONS).join("circle")
       .attr("class","trend-dot")
       .attr("r", 4)
-      .attr("fill", d => d3.interpolateRgb("#1d6fb8","#e8702a")((d.season-2003)/18))
+      .attr("fill", d => d3.interpolateRgb("#C8102E","#F5B800")((d.season-2003)/18))
       .attr("cx", d => x(d.season))
       .on("mouseenter", (ev,d) => showTip(`<strong>${d.season}</strong><br>${meta.label}: <strong>${meta.fmt(d[m])}</strong>`, ev))
       .on("mousemove",  (ev,d) => showTip(`<strong>${d.season}</strong><br>${meta.label}: <strong>${meta.fmt(d[m])}</strong>`, ev))
       .on("mouseleave", hideTip)
-      .transition().duration(600).attr("cy", d => y(d[m]));
+      .transition().duration(dur).attr("cy", d => y(d[m]));
 
-    // callouts (only for threePApg)
     calloutG.selectAll("*").remove();
     if (m === "threePApg") {
       callouts.forEach(c => {
@@ -208,7 +189,6 @@ function buildLineChart() {
       });
     }
 
-    // era highlight
     if (highlightRange) {
       const [s1, s2] = highlightRange;
       const rx = x(Math.max(2003, s1));
@@ -219,7 +199,6 @@ function buildLineChart() {
       highlightRect.transition().duration(300).attr("opacity",0);
     }
 
-    // projection
     if (showProjection && m === "threePApg") {
       const reg = linReg(SEASONS, "season", "threePApg");
       const projYears = d3.range(2021, 2031);
@@ -228,8 +207,8 @@ function buildLineChart() {
       const bandGen = d3.area().x(d=>x(d.x)).y0(d=>y(d.lower)).y1(d=>y(d.upper)).curve(d3.curveMonotoneX);
       const projLineGen = d3.line().x(d=>x(d.x)).y(d=>y(d.y)).curve(d3.curveMonotoneX);
 
-      projBandPath.datum(pts).transition().duration(600).attr("d", bandGen);
-      projLinePath.datum(pts).transition().duration(600).attr("d", projLineGen);
+      projBandPath.datum(pts).transition().duration(dur).attr("d", bandGen);
+      projLinePath.datum(pts).transition().duration(dur).attr("d", projLineGen);
 
       const last = pts[pts.length-1];
       projLabel.transition().duration(600)
@@ -241,10 +220,8 @@ function buildLineChart() {
       projLabel.text("");
     }
 
-    // annotation updated by slider only
   }
 
-  // season marker elements
   const seasonMarker = g.append("line").attr("class","season-marker").attr("y1",0).attr("y2",ih);
   const seasonDot    = g.append("circle").attr("class","season-dot").attr("r",6);
 
@@ -261,12 +238,10 @@ function buildLineChart() {
       `In <strong>${d.season}</strong>, teams averaged <strong>${METRICS.threePApg.fmt(d.threePApg)}</strong> threes per game — that was <strong>${METRICS.threePAR.fmt(d.threePAR)}</strong> of all field goal attempts.`;
   }
 
-  // expose draw so scrolly can call it
   window._redrawLine = draw;
   window._updateSeasonMarker = updateSeasonMarker;
   draw();
 
-  // metric toggle
   d3.selectAll(".metric-toggle button").on("click", function() {
     d3.selectAll(".metric-toggle button").classed("active", false);
     d3.select(this).classed("active", true);
@@ -276,13 +251,12 @@ function buildLineChart() {
     if (slider) updateSeasonMarker(+slider.value);
   });
 
-  // season slider
   const slider = document.getElementById("season-slider");
   if (slider) {
     slider.addEventListener("input", () => {
       const season = +slider.value;
       updateSeasonMarker(season);
-      // update scrolly era based on slider position
+
       const era = season <= 2010 ? 0 : season <= 2014 ? 1 : season <= 2017 ? 2 : 3;
       const cfg = ERA_CONFIG[era];
       if (cfg) {
@@ -307,9 +281,6 @@ function buildLineChart() {
   }
 }
 
-// =====================================================================
-// SCROLLYTELLING
-// =====================================================================
 function initScrolly() {
   const panels = document.querySelectorAll(".scroll-panel");
   if (!panels.length) return;
@@ -321,20 +292,16 @@ function initScrolly() {
       const cfg = ERA_CONFIG[era];
       if (!cfg) return;
 
-      // update sticky header
       document.getElementById("era-badge").textContent = cfg.badge;
       document.getElementById("era-title").textContent = cfg.title;
       document.getElementById("era-desc").textContent  = cfg.desc;
 
-      // active panel styling
       panels.forEach(p => p.classList.remove("active"));
       entry.target.classList.add("active");
 
-      // update chart state
       highlightRange  = cfg.seasonRange;
       showProjection  = era === 4;
 
-      // switch metric if needed
       if (cfg.metric !== lineMetric) {
         lineMetric = cfg.metric;
         document.querySelectorAll(".metric-toggle button").forEach(btn => {
@@ -342,7 +309,6 @@ function initScrolly() {
         });
       }
 
-      // snap slider first
       const slider = document.getElementById("season-slider");
       let snapSeason = 2003;
       if (slider && cfg.seasonRange) {
@@ -350,10 +316,10 @@ function initScrolly() {
         slider.value = snapSeason;
       }
 
-      // redraw chart
+      isSnapping = true;
       if (window._redrawLine) window._redrawLine();
+      isSnapping = false;
 
-      // update annotation AFTER redraw so it doesn't get overwritten
       if (window._updateSeasonMarker) window._updateSeasonMarker(snapSeason);
     });
   }, { threshold: 0.4 });
@@ -361,9 +327,6 @@ function initScrolly() {
   panels.forEach(p => observer.observe(p));
 }
 
-// =====================================================================
-// THEN VS NOW CARDS
-// =====================================================================
 function buildThenNow() {
   const el = document.getElementById("then-now");
   if (!el) return;
@@ -396,9 +359,6 @@ function buildThenNow() {
   });
 }
 
-// =====================================================================
-// HORIZONTAL SCROLL CHAMPIONS
-// =====================================================================
 function buildHScroll() {
   const track = document.getElementById("hscroll-track");
   if (!track) return;
@@ -423,7 +383,6 @@ function buildHScroll() {
     track.appendChild(card);
   });
 
-  // drag to scroll
   const wrapper = track.parentElement;
   let isDown = false, startX, scrollLeft;
   wrapper.addEventListener("mousedown", e => {
@@ -442,7 +401,6 @@ function buildHScroll() {
   });
 }
 
-
 async function buildScatter() {
   const container = document.getElementById("scatter-chart");
   if (!container) return;
@@ -451,7 +409,7 @@ async function buildScatter() {
   try {
     scatterData = await d3.json("final/scatter_data.json");
   } catch(e) {
-    // fallback hardcoded
+
     scatterData = [
       {season:2003,fg3pct:0.187,winpct:0.41},{season:2003,fg3pct:0.211,winpct:0.55},
       {season:2010,fg3pct:0.223,winpct:0.46},{season:2015,fg3pct:0.318,winpct:0.70},
@@ -471,7 +429,7 @@ async function buildScatter() {
 
   const sx = d3.scaleLinear().domain(d3.extent(scatterData, d=>d.fg3pct)).nice().range([0,iw]);
   const sy = d3.scaleLinear().domain([0.2, 0.8]).nice().range([ih,0]);
-  const sc = d3.scaleSequential().domain([2003,2021]).interpolator(d3.interpolateRgb("#1d6fb8","#e8702a"));
+  const sc = d3.scaleSequential().domain([2003,2021]).interpolator(d3.interpolateRgb("#C8102E","#F5B800"));
 
   g.append("g").attr("class","axis").attr("transform",`translate(0,${ih})`).call(d3.axisBottom(sx).tickFormat(d3.format(".0%")).ticks(6));
   g.append("g").attr("class","axis").call(d3.axisLeft(sy).tickFormat(d3.format(".0%")).ticks(6));
@@ -479,7 +437,6 @@ async function buildScatter() {
   g.append("text").attr("class","axis-title").attr("x",iw/2).attr("y",ih+36).attr("text-anchor","middle").text("3-Point Attempt Rate");
   g.append("text").attr("class","axis-title").attr("transform","rotate(-90)").attr("x",-ih/2).attr("y",-40).attr("text-anchor","middle").text("Win %");
 
-  // regression line
   const reg = linReg(scatterData, "fg3pct", "winpct");
   const x1 = d3.min(scatterData,d=>d.fg3pct), x2 = d3.max(scatterData,d=>d.fg3pct);
   g.append("line").attr("class","regression-line")
@@ -498,9 +455,6 @@ async function buildScatter() {
 
 }
 
-// =====================================================================
-// VIZ 3 — CHAMPIONS BAR CHART
-// =====================================================================
 function buildChampions() {
   const container = document.getElementById("champ-chart");
   if (!container) return;
@@ -530,7 +484,6 @@ function buildChampions() {
   g.append("text").attr("class","axis-title").attr("transform","rotate(-90)")
     .attr("x",-ih/2).attr("y",-40).attr("text-anchor","middle").text("3PA per game");
 
-  // warriors reference line
   const gsw2015 = CHAMPIONS.find(d=>d.label==="2015 GSW");
   if (gsw2015) {
     g.append("line")
@@ -546,7 +499,7 @@ function buildChampions() {
     .attr("class","champ-bar")
     .attr("x", d=>cx(d.label)).attr("width", cx.bandwidth())
     .attr("y", ih).attr("height",0)
-    .attr("fill", d => d.label.includes("GSW") ? "#e8702a" : "#1d6fb8")
+    .attr("fill", d => d.label.includes("GSW") ? "#F5B800" : "#C8102E")
     .on("mouseenter", function(ev,d) {
       d3.select(this).classed("hover",true);
       showTip(`<strong>${d.label}</strong><br>${d.threePApg} threes/game`,ev);
@@ -564,9 +517,6 @@ function buildChampions() {
     .text(d=>d.threePApg);
 }
 
-// =====================================================================
-// VIZ 4 — TIME MACHINE
-// =====================================================================
 function buildTimeMachine() {
   const container = document.getElementById("tm-chart");
   if (!container) return;
@@ -589,28 +539,23 @@ function buildTimeMachine() {
   g.append("text").attr("class","axis-title").attr("x",iw/2).attr("y",ih+32).attr("text-anchor","middle").text("Season");
   g.append("text").attr("class","axis-title").attr("transform","rotate(-90)").attr("x",-ih/2).attr("y",-38).attr("text-anchor","middle").text("3PA/game");
 
-  // trend line
   const lineGen = d3.line().x(d=>x(d.season)).y(d=>y(d.threePApg)).curve(d3.curveMonotoneX);
-  g.append("path").datum(SEASONS).attr("fill","none").attr("stroke","#1d6fb8").attr("stroke-width",2).attr("d",lineGen);
+  g.append("path").datum(SEASONS).attr("fill","none").attr("stroke","#C8102E").attr("stroke-width",2).attr("d",lineGen);
 
-  // user line
   const userLine = g.append("line").attr("class","season-marker")
     .attr("x1",0).attr("x2",iw).attr("y1",y(28)).attr("y2",y(28));
 
-  // intersection dot
   const intersectDot = g.append("circle").attr("class","season-dot").attr("r",6);
 
-  // dots on line
   g.selectAll("circle.tm-dot").data(SEASONS).join("circle")
     .attr("class","tm-dot")
     .attr("cx",d=>x(d.season)).attr("cy",d=>y(d.threePApg)).attr("r",3)
-    .attr("fill","#1d6fb8").attr("opacity",0.7);
+    .attr("fill","#C8102E").attr("opacity",0.7);
 
   function update(val) {
     document.getElementById("tm-val").textContent = val.toFixed(1);
     userLine.transition().duration(100).attr("y1",y(val)).attr("y2",y(val));
 
-    // find closest season
     let closest = SEASONS[0], minDiff = Infinity;
     SEASONS.forEach(d => {
       const diff = Math.abs(d.threePApg - val);
@@ -620,11 +565,9 @@ function buildTimeMachine() {
     intersectDot.transition().duration(100)
       .attr("cx",x(closest.season)).attr("cy",y(closest.threePApg));
 
-    // rank in 2021
     const sorted = [...SEASONS].sort((a,b)=>a.threePApg-b.threePApg);
     const rank2003 = sorted.findIndex(d=>d.threePApg>=val);
 
-    // verdict
     const verdict = document.getElementById("tm-verdict");
     if (val <= 20) {
       verdict.innerHTML = `${val.toFixed(1)} threes a game was pretty normal around <strong>${closest.season}</strong>. By today's standards that number would put you near the bottom of the league.`;
@@ -646,14 +589,117 @@ function buildTimeMachine() {
   }
 }
 
-// =====================================================================
-// INIT
-// =====================================================================
+async function buildPredictor() {
+  const container = document.getElementById("predictor-chart");
+  if (!container) return;
+
+  let data = [];
+  try { data = await d3.json("final/scatter_data.json"); } catch(e) { return; }
+
+  const reg = linReg(data, "fg3pct", "winpct");
+  const r2 = (() => {
+    const ybar = d3.mean(data, d => d.winpct);
+    const ssTot = d3.sum(data, d => (d.winpct - ybar) ** 2);
+    const ssRes = d3.sum(data, d => (d.winpct - (reg.slope * d.fg3pct + reg.intercept)) ** 2);
+    return 1 - ssRes / ssTot;
+  })();
+
+  const W = Math.min(860, container.clientWidth || 860);
+  const H = 280;
+  const pm = { top: 15, right: 20, bottom: 44, left: 52 };
+  const iw = W - pm.left - pm.right;
+  const ih = H - pm.top - pm.bottom;
+
+  const svg = d3.select("#predictor-chart").append("svg")
+    .attr("viewBox", `0 0 ${W} ${H}`).attr("class", "responsive-svg");
+  const g = svg.append("g").attr("transform", `translate(${pm.left},${pm.top})`);
+
+  const px = d3.scaleLinear().domain([0.28, 0.42]).range([0, iw]);
+  const py = d3.scaleLinear().domain([0.15, 0.80]).range([ih, 0]);
+
+  g.append("g").attr("class", "grid").selectAll("line")
+    .data(py.ticks(5)).join("line")
+    .attr("x1", 0).attr("x2", iw)
+    .attr("y1", d => py(d)).attr("y2", d => py(d))
+    .attr("stroke", "rgba(255,255,255,0.04)");
+
+  g.append("g").attr("class", "axis").attr("transform", `translate(0,${ih})`)
+    .call(d3.axisBottom(px).tickFormat(d3.format(".0%")).ticks(7));
+  g.append("g").attr("class", "axis")
+    .call(d3.axisLeft(py).tickFormat(d3.format(".0%")).ticks(6));
+  g.append("text").attr("class", "axis-title").attr("x", iw / 2).attr("y", ih + 36)
+    .attr("text-anchor", "middle").text("3-Point Shooting %");
+  g.append("text").attr("class", "axis-title").attr("transform", "rotate(-90)")
+    .attr("x", -ih / 2).attr("y", -40).attr("text-anchor", "middle").text("Win %");
+
+  const bandXs = d3.range(0.28, 0.421, 0.002);
+  const bandPts = bandXs.map(xv => projPoint(reg, xv));
+  const bandArea = d3.area()
+    .x(d => px(d.x)).y0(d => py(Math.max(0.15, d.lower))).y1(d => py(Math.min(0.80, d.upper)));
+  g.append("path").datum(bandPts).attr("class", "pred-band").attr("d", bandArea);
+
+  const rl = [{ x: 0.28 }, { x: 0.42 }].map(d => ({ x: d.x, y: reg.slope * d.x + reg.intercept }));
+  g.append("line").attr("class", "regression-line")
+    .attr("x1", px(rl[0].x)).attr("y1", py(rl[0].y))
+    .attr("x2", px(rl[1].x)).attr("y2", py(rl[1].y));
+
+  g.append("text").attr("class", "callout-text")
+    .attr("x", iw - 4).attr("y", 12).attr("text-anchor", "end")
+    .text(`R² = ${r2.toFixed(3)}`);
+
+  g.selectAll("circle.pd").data(data).join("circle").attr("class", "pd")
+    .attr("cx", d => px(Math.max(0.28, Math.min(0.42, d.fg3pct))))
+    .attr("cy", d => py(Math.max(0.15, Math.min(0.80, d.winpct))))
+    .attr("r", 2.5)
+    .attr("fill", d => d3.interpolateRgb("#C8102E", "#F5B800")((d.season - 2003) / 18))
+    .attr("opacity", 0.3)
+    .on("mouseenter", (ev, d) => showTip(`<strong>${d.team} ${d.season}</strong><br>3PT%: ${(d.fg3pct * 100).toFixed(1)}%<br>Win%: ${(d.winpct * 100).toFixed(1)}%`, ev))
+    .on("mousemove",  (ev, d) => showTip(`<strong>${d.team} ${d.season}</strong><br>3PT%: ${(d.fg3pct * 100).toFixed(1)}%<br>Win%: ${(d.winpct * 100).toFixed(1)}%`, ev))
+    .on("mouseleave", hideTip);
+
+  const markerLine = g.append("line").attr("class", "pred-marker-line")
+    .attr("y1", 0).attr("y2", ih);
+  const markerDot = g.append("circle").attr("class", "pred-marker-dot").attr("r", 7);
+
+  function updatePredictor(fg3Raw) {
+    const fg3 = fg3Raw / 100; // convert % input to decimal
+    const pt = projPoint(reg, fg3);
+    const winPct = Math.max(0.15, Math.min(0.80, pt.y));
+    const lo = Math.max(0, pt.lower), hi = Math.min(1, pt.upper);
+    const wins = Math.round(winPct * 82);
+
+    document.getElementById("pred-win-pct").textContent = (winPct * 100).toFixed(1) + "%";
+    document.getElementById("pred-ci").textContent =
+      `95% CI: ${(lo * 100).toFixed(1)}% – ${(hi * 100).toFixed(1)}%`;
+
+    const tier = winPct >= 0.60 ? "playoff contender" : winPct >= 0.50 ? "bubble team" : winPct >= 0.40 ? "lottery team" : "rebuilding";
+    const era = fg3 < 0.32 ? "bottom of the league in 2021" : fg3 < 0.35 ? "league average (2021)" : fg3 < 0.38 ? "above average shooter" : "elite 3PT team";
+    document.getElementById("pred-context").innerHTML =
+      `A team shooting <strong>${(fg3 * 100).toFixed(1)}%</strong> from three projects to win around <strong>${wins} games</strong> — that's a <strong>${tier}</strong>. At that shooting rate they'd be considered <strong>${era}</strong>. The confidence interval reflects how much variation exists beyond shooting percentage alone.`;
+
+    const clampedX = Math.max(0.28, Math.min(0.42, fg3));
+    markerLine.attr("x1", px(clampedX)).attr("x2", px(clampedX));
+    markerDot.attr("cx", px(clampedX)).attr("cy", py(winPct));
+  }
+
+  const slider = document.getElementById("pred-fg3");
+  const valEl  = document.getElementById("pred-fg3-val");
+  if (slider) {
+    slider.addEventListener("input", () => {
+      const v = +slider.value;
+      valEl.textContent = v.toFixed(1) + "%";
+      updatePredictor(v);
+    });
+    updatePredictor(+slider.value);
+  }
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
   buildLineChart();
   buildThenNow();
   await buildScatter();
   buildChampions();
   buildTimeMachine();
+  await buildPredictor();
   initScrolly();
 });

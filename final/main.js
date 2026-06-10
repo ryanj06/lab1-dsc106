@@ -673,7 +673,11 @@ async function buildPredictor() {
       `95% CI: ${(lo * 100).toFixed(1)}% – ${(hi * 100).toFixed(1)}%`;
 
     let ctxVerdict;
-    if (winPct >= 0.60) {
+    if (winPct >= 0.70) {
+      ctxVerdict = `Projected at <strong>${wins} wins</strong> — dynastic. This is Warriors 2016 territory. All-time great team energy.`;
+    } else if (winPct >= 0.65) {
+      ctxVerdict = `Projected at <strong>${wins} wins</strong> — a title contender. This team is dangerous and everyone knows it.`;
+    } else if (winPct >= 0.60) {
       ctxVerdict = `Projected at <strong>${wins} wins</strong> — a legitimate playoff contender. Teams shooting this efficiently from three are usually in the mix come April.`;
     } else if (winPct >= 0.50) {
       ctxVerdict = `Projected at <strong>${wins} wins</strong> — solid but not scary. This team makes the playoffs and likely loses in the first round.`;

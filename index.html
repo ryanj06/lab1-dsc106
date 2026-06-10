@@ -11,7 +11,7 @@
     <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
   </head>
   <body>
-    <!-- HERO -->
+    
     <header class="hero">
       <div class="hero-inner">
         <p class="kicker">DSC 106 · Final Project · UCSD</p>
@@ -25,7 +25,7 @@
       </div>
     </header>
 
-    <!-- INTRO -->
+    
     <section class="prose-section">
       <div class="prose-inner">
         <p class="lead">For most of NBA history, the midrange jumper was just part of the game. Guys like Kobe, Dirk, and Tim Duncan lived there. Nobody questioned it. Then front offices started running the numbers and realized those shots were basically the worst ones you could take.</p>
@@ -33,7 +33,7 @@
       </div>
     </section>
 
-    <!-- SCROLLYTELLING SECTION -->
+    
     <section class="scroll-section" id="scroll-section">
       <div class="scroll-sticky" id="scroll-sticky">
         <div class="sticky-header">
@@ -42,7 +42,7 @@
           <p class="era-desc" id="era-desc">Teams shot around 15 threes per game. Kobe, Duncan, Dirk ruled the elbow.</p>
         </div>
 
-        <!-- METRIC TOGGLE + SEASON SLIDER -->
+        
         <div class="controls">
           <div class="metric-toggle" role="group">
             <button data-metric="threePAR" class="active">3PA share of shots</button>
@@ -57,10 +57,9 @@
 
         <div id="line-chart"></div>
 
-        <div class="annotation-box" id="line-annotation"></div>
       </div>
 
-      <!-- SCROLL TRIGGER PANELS -->
+      
       <div class="scroll-panels" id="scroll-panels">
         <div class="scroll-panel" data-era="0">
           <div class="panel-content">
@@ -105,7 +104,7 @@
       </div>
     </section>
 
-    <!-- THEN VS NOW -->
+    
     <section class="prose-section">
       <div class="prose-inner">
         <h2 class="section-heading">Then vs. Now</h2>
@@ -114,7 +113,7 @@
       <div class="then-now-grid" id="then-now"></div>
     </section>
 
-    <!-- WIN CORRELATION -->
+    
     <section class="prose-section">
       <div class="prose-inner">
         <h2 class="section-heading">Do more threes mean more wins?</h2>
@@ -123,7 +122,7 @@
       <div id="scatter-chart"></div>
     </section>
 
-    <!-- CHAMPIONS BAR -->
+    
     <section class="prose-section dark-section">
       <div class="prose-inner">
         <h2 class="section-heading">Champions led the shift</h2>
@@ -132,7 +131,7 @@
       <div id="champ-chart"></div>
     </section>
 
-    <!-- TIME MACHINE -->
+    
     <section class="prose-section">
       <div class="prose-inner">
         <h2 class="section-heading">Where does your number land?</h2>
@@ -145,6 +144,37 @@
         </div>
         <div id="tm-chart"></div>
         <div class="tm-verdict" id="tm-verdict"></div>
+      </div>
+    </section>
+
+    
+    <section class="prose-section dark-section" id="predictor-section">
+      <div class="prose-inner">
+        <h2 class="section-heading">Predict your team's wins</h2>
+        <p>Set a hypothetical 3-point shooting percentage and see what the historical data predicts for win rate — with a 95% confidence interval built from 569 team-seasons.</p>
+      </div>
+      <div class="predictor" id="predictor">
+        <div class="predictor-controls">
+          <div class="predictor-input-row">
+            <div class="predictor-knob">
+              <label class="predictor-knob-label">3PT shooting %</label>
+              <div class="predictor-slider-wrap">
+                <input type="range" id="pred-fg3" min="28" max="42" value="35" step="0.5" />
+                <span class="predictor-val" id="pred-fg3-val">35.0%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="predictor-output" id="predictor-output">
+          <div class="pred-result-card" id="pred-result-card">
+            <div class="pred-win-pct" id="pred-win-pct">—</div>
+            <div class="pred-win-label">predicted win rate</div>
+            <div class="pred-ci" id="pred-ci">95% CI: — to —</div>
+          </div>
+          <div class="pred-context" id="pred-context"></div>
+        </div>
+        <div id="predictor-chart"></div>
+        <div class="pred-note">Model: OLS regression on 569 NBA team-seasons (2003–2021). R² shown reflects 3PT% as sole predictor — real win% depends on many factors.</div>
       </div>
     </section>
 

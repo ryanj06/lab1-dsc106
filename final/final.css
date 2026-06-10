@@ -598,6 +598,8 @@ code {
   font-size: 1.4rem;
 }
 
+#season-slider { accent-color: var(--orange); cursor: pointer; }
+
 #tm-slider {
   width: min(400px, 90%);
   accent-color: var(--orange);
